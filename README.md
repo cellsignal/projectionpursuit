@@ -1,0 +1,2 @@
+# projectionpursuit
+projection pursuit clustering
