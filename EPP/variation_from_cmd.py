@@ -26,7 +26,7 @@ draw_all = False
 cluster_results = []
 
 
-# ищет индекс ближайшего значения в массиве:
+# looks for the index of the closest value in the array:
 def find_nearest_idx(array, value):
     array = np.asarray(array)
     idx = (np.abs(array - value)).argmin()
