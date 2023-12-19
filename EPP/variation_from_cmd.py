@@ -15,10 +15,10 @@ fn_in = sys.argv[1]
 fn_out = 'results/results_' + fn_in
 
 min_cluster_size = int(sys.argv[2])
-h = .01
-sigma = 3
+# h = .01
+# sigma = 3
 dq = 0.02
-q2 = 0.1
+# q2 = 0.1
 ndim = int(sys.argv[3])
 max_dj = 5
 draw_all = False
@@ -107,7 +107,8 @@ def sum_along_y_max(zz):
 
 
 # ищет экстремаль с параметром q:
-def minimize(xx, yy, zz, q, max_dj):
+# def minimize(xx, yy, zz, q, max_dj):
+def minimize(xx, yy, zz, q, max_dj,zmx):
     err = 0.0
     xx_ = xx[0, :]
     (n,) = xx_.shape
@@ -115,6 +116,13 @@ def minimize(xx, yy, zz, q, max_dj):
     (m,) = yy_.shape
     # "притяжение" к параболе
     zz0 = np.power(yy - (q * yy_[-1] + (1 - q) * yy_[0]), 2)
+    
+    # среднее значение параболы:                   
+    zz0m=zz0.mean()
+
+    # оптимальное q2:
+    q2 = np.power(zmx, 0.5) / zz0m
+
     zz1 = zz + q2 * zz0
     ii = np.arange(n)
     jj = []
@@ -300,7 +308,16 @@ def split_iteration(step, data_list, data_for_calc_0):
                     y_min_0, y_max_0 = X0[:, 1].min(), X0[:, 1].max()
                     x_min, x_max = 0, 1
                     y_min, y_max = 0, 1
-                    N = int(1/h)
+                                                       
+                    # N = int(1/h)
+                    #  сумма элементов гистограммы:
+                    szz=len(X0)
+                    #  оптимальное число разбиений гистограммы:
+                    N = int(np.power((szz-1)*(szz-1)*3/4, 0.2)*4)
+                    h = 1/N
+                    #  оптимальная ширина гаусса сглаживания:
+                    sigma = 0.05 * N
+                    
                     # строим сетку:
                     xedges, yedges = np.linspace(x_min, x_max, N + 1), np.linspace(y_min, y_max, N + 1)
                     # строим гистограмму:
@@ -315,10 +332,15 @@ def split_iteration(step, data_list, data_for_calc_0):
                     yy_ = yy[:, 0]
                     (m,) = yy_.shape
 
+                    # cреднее значение гистограммы: 
+                    zmx=zz.mean()
+                    
                     results0 = []
                     # для каждого значения параметра ищем экстремаль:
                     for q in np.arange(0, 1, dq):
-                        res = minimize(xx, yy, zz, q, max_dj)
+                        # res = minimize(xx, yy, zz, q, max_dj)
+                        res = minimize(xx, yy, zz, q, max_dj,zmx)
+                        
                         results0.append(res)
                     results = []
                     for i in np.arange(1, len(results0) - 1):
