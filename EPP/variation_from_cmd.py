@@ -313,10 +313,12 @@ def split_iteration(step, data_list, data_for_calc_0):
                     #  sum of histogram elements:
                     szz=len(X0)
                     #  optimal number of histogram partitions:
-                    N = int(np.power((szz-1)*(szz-1)*3/4, 0.2)*4)
+                    # N = int(np.power((szz-1)*(szz-1)*3/4, 0.2)*4)
+                    N = 10*int(np.power((szz-1)*(szz-1)*3/4, 0.1)*2)
                     h = 1/N
                     #  optimal width of Gaussian smoothing:
-                    sigma = 0.05 * N
+                    # sigma = 0.05 * N
+                    sigma = 5
                     
                     # build a grid:
                     xedges, yedges = np.linspace(x_min, x_max, N + 1), np.linspace(y_min, y_max, N + 1)
