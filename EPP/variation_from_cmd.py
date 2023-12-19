@@ -302,7 +302,7 @@ def split_iteration(step, data_list, data_for_calc_0):
                 if index2 > index1 or index2 < index1:
                     # data with normalized x, y axes:
                     X = data_for_calc[:, [index1, index2]]
-                    # оригинальные данные:
+                    # original data:
                     X0 = data_for_calc_0[:, [index1, index2]]
                     x_min_0, x_max_0 = X0[:, 0].min(), X0[:, 0].max()
                     y_min_0, y_max_0 = X0[:, 1].min(), X0[:, 1].max()
