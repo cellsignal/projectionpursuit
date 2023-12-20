@@ -11,6 +11,9 @@ from operator import attrgetter
 from sklearn import metrics
 import numpy.core.defchararray as np_f
 
+# start time
+start_time = time.time()
+
 fn_in = sys.argv[1]
 fn_out = 'results/results_' + fn_in
 
@@ -486,12 +489,17 @@ print('splitting done ', t1 - t0)
 
 # cluster_results - global variable
 # collect the initial data and numbers of the resulting clusters into an array:
+
+print('')
+print('number of clusters = ', len(cluster_results))
+
 for i in range(len(cluster_results)):
     cluster_data = []
     for row in cluster_results[i]:
         row2 = np.append(row, i)
         cluster_data.append(row2)
-    print(len(cluster_data))
+    #print(len(cluster_data))
+    print('size of cluster', i, ' = ', len(cluster_data))
     array = np.array(cluster_data)
     if i == 0:
         result_array = array
@@ -505,3 +513,13 @@ result_array = result_array[:, ndim+1:]
 np.savetxt(fn_out, result_array,
            fmt='%s', header=','.join(headers),
            delimiter=',', comments='')
+
+sc = metrics.calinski_harabasz_score(result_array, result_array[:,ndim])
+print('Calinski-Harabasz score = ', sc)
+
+# end time
+end_time = time.time()
+
+# elapsed time
+elapsed_time = end_time - start_time
+print('total elapsed time: ', elapsed_time, 's')
