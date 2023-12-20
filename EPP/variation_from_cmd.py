@@ -17,6 +17,9 @@ fn_out = 'results/results_' + fn_in
 min_cluster_size = int(sys.argv[2])
 # h = .01
 # sigma = 3
+# Gaussian smoothing width:
+sigma = 5
+
 dq = 0.02
 # q2 = 0.1
 ndim = int(sys.argv[3])
@@ -117,11 +120,11 @@ def minimize(xx, yy, zz, q, max_dj,zmx):
     # "attraction" to the parabola
     zz0 = np.power(yy - (q * yy_[-1] + (1 - q) * yy_[0]), 2)
     
-    # average parabola value:                  
-    zz0m=zz0.mean()
+    # maximum value of the parabola:                  
+    zz0m=zz0.max()
 
     # optimal value of q2:
-    q2 = np.power(zmx, 0.5) / zz0m
+    q2 = zmx / zz0m
 
     zz1 = zz + q2 * zz0
     ii = np.arange(n)
@@ -311,14 +314,10 @@ def split_iteration(step, data_list, data_for_calc_0):
                                                        
                     # N = int(1/h)
                     #  sum of histogram elements:
-                    szz=len(X0)
+                    szz=len(X)
                     #  optimal number of histogram partitions:
-                    # N = int(np.power((szz-1)*(szz-1)*3/4, 0.2)*4)
-                    N = 10*int(np.power((szz-1)*(szz-1)*3/4, 0.1)*2)
+                    N = 2*sigma*int(np.power((szz-1)*(szz-1)*3/4, 0.1)*2)
                     h = 1/N
-                    #  optimal width of Gaussian smoothing:
-                    # sigma = 0.05 * N
-                    sigma = 5
                     
                     # build a grid:
                     xedges, yedges = np.linspace(x_min, x_max, N + 1), np.linspace(y_min, y_max, N + 1)
@@ -334,8 +333,8 @@ def split_iteration(step, data_list, data_for_calc_0):
                     yy_ = yy[:, 0]
                     (m,) = yy_.shape
 
-                    # average histogram value: 
-                    zmx=zz.mean()
+                    # maximum smoothed histogram value: 
+                    zmx=zz.max()
                     
                     results0 = []
                     # search for an extremal for each parameter value:
