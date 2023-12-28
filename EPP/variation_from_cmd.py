@@ -514,7 +514,11 @@ np.savetxt(fn_out, result_array,
            fmt='%s', header=','.join(headers),
            delimiter=',', comments='')
 
-sc = metrics.calinski_harabasz_score(result_array, result_array[:,ndim])
+if len(cluster_results) > 1:
+    sc = metrics.calinski_harabasz_score(result_array, result_array[:,ndim])
+else:
+    sc = 0.0
+    
 print('Calinski-Harabasz score = ', sc)
 
 # end time
