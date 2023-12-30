@@ -25,7 +25,7 @@ sigma = 5
 
 dq = 0.02
 # q2 = 0.1
-rel_parab_am = 0.5
+rel_parab_am = 0.1
 ndim = int(sys.argv[3])
 max_dj = 5
 draw_all = False
@@ -127,11 +127,8 @@ def minimize(xx, yy, zz, q, max_dj,zmx):
     # maximum value of the parabola:                  
     zz0m=zz0.max()
 
-    # maximum value of the data:                  
-    zzm=zz.max()
-
     # optimal value of q2:
-    q2 = zzm / zz0m * rel_parab_am
+    q2 = zmx / zz0m * rel_parab_am
 
     zz1 = zz + q2 * zz0
     ii = np.arange(n)
