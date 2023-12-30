@@ -114,8 +114,7 @@ def sum_along_y_max(zz):
 
 
 # search for an extremal with parameter q:
-# def minimize(xx, yy, zz, q, max_dj):
-def minimize(xx, yy, zz, q, max_dj,zmx):
+def minimize(xx, yy, zz, q, max_dj):
     err = 0.0
     xx_ = xx[0, :]
     (n,) = xx_.shape
@@ -126,9 +125,12 @@ def minimize(xx, yy, zz, q, max_dj,zmx):
     
     # maximum value of the parabola:                  
     zz0m=zz0.max()
-
+    
+    # maximum value of the data:                  
+    zzm=zz.max()
+    
     # optimal value of q2:
-    q2 = zmx / zz0m * rel_parab_am
+    q2 = zzm / zz0m * rel_parab_am
 
     zz1 = zz + q2 * zz0
     ii = np.arange(n)
@@ -337,15 +339,10 @@ def split_iteration(step, data_list, data_for_calc_0):
                     yy_ = yy[:, 0]
                     (m,) = yy_.shape
 
-                    # maximum smoothed histogram value: 
-                    zmx=zz.max()
-                    
                     results0 = []
                     # search for an extremal for each parameter value:
                     for q in np.arange(0, 1, dq):
-                        # res = minimize(xx, yy, zz, q, max_dj)
-                        res = minimize(xx, yy, zz, q, max_dj,zmx)
-                        
+                        res = minimize(xx, yy, zz, q, max_dj)       
                         results0.append(res)
                     results = []
                     for i in np.arange(1, len(results0) - 1):
