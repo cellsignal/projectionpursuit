@@ -20,7 +20,7 @@ fn_out = 'results/results_' + fn_in
 min_cluster_size = int(sys.argv[2])
 # h = .01
 # Gaussian smoothing width:
-sigma = 5
+sigma = 3
 
 dq = 0.02
 # q2 = 0.1
