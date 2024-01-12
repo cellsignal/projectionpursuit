@@ -24,7 +24,7 @@ sigma = 3
 
 dq = 0.02
 # q2 = 0.1
-rel_parab_am = 0.1
+betta = 0.1
 ndim = int(sys.argv[3])
 max_dj = 5
 draw_all = False
@@ -122,14 +122,8 @@ def minimize(xx, yy, zz, q, max_dj):
     # "attraction" to the parabola
     zz0 = np.power(yy - (q * yy_[-1] + (1 - q) * yy_[0]), 2)
     
-    # maximum value of the parabola:                  
-    zz0m=zz0.max()
-    
-    # maximum value of the data:                  
-    zzm=zz.max()
-    
     # optimal value of q2:
-    q2 = zzm / zz0m * rel_parab_am
+    q2 = (zz.max()-zz.min()) / zz0.max() * betta
 
     zz1 = zz + q2 * zz0
     ii = np.arange(n)
@@ -515,7 +509,9 @@ if len(cluster_results) > 1:
     sc = metrics.calinski_harabasz_score(result_array, result_array[:,ndim])
 else:
     sc = 0.0
-    
+
+print('sigma = ', sigma)
+print('betta = ', betta)
 print('Calinski-Harabasz score = ', sc)
 
 # end time
