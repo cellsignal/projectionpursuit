@@ -73,6 +73,23 @@ def find_saddle_points(mat):
                 saddle_points.append((j, i))
     return saddle_points
 
+#metrics Score function
+def SFun(X, y):
+    n_clusters = len(np.unique(y))
+    n_samples = X.shape[0]
+    overall_mean = X.mean(axis=0)
+
+    centroid = np.zeros((n_clusters, X.shape[1]))
+    ssb, ssw = 0, 0
+    for n_cluster in range(n_clusters):
+        i = np.where(y==n_cluster)[0]
+        ni = len(i)
+        centroid[n_cluster, :] = X[i].mean(axis=0)
+        ssb += ni * np.linalg.norm(centroid[n_cluster] - overall_mean)**2
+        for xx in X[i, :]:
+            ssw += np.linalg.norm(centroid[n_cluster] - xx)**2 / ni
+    SF = ssb / ssw / n_samples / n_clusters
+    return SF
 
 class Result:
     xxx = None
@@ -352,7 +369,8 @@ def split_iteration(step, data_list, data_for_calc_0):
                                 split_data_by_separatrix(res.xxx, res.yyy, data_for_calc, index1, index2)
                             # if it splits successfully, look for score:
                             if len(split_results) > 1:
-                                res.score = metrics.calinski_harabasz_score(split_results_2, split_labels)
+                                #res.score = metrics.calinski_harabasz_score(split_results_2, split_labels)
+                                res.score = SFun(split_results_2, split_labels)
                             else:
                                 res.score = 0.0
                     print('results found: {0}'.format(len(results)))
@@ -506,7 +524,8 @@ np.savetxt(fn_out, result_array,
            delimiter=',', comments='')
 
 if len(cluster_results) > 1:
-    sc = metrics.calinski_harabasz_score(result_array, result_array[:,ndim])
+    #sc = metrics.calinski_harabasz_score(result_array, result_array[:,ndim])
+    sc = SFun(result_array, result_array[:,ndim])
 else:
     sc = 0.0
 
