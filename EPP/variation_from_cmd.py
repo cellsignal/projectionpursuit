@@ -73,7 +73,8 @@ def find_saddle_points(mat):
                 saddle_points.append((j, i))
     return saddle_points
 
-#metrics Score function
+# metrics Score function
+# modified Calinski-Harabasz score
 def SFun(X, y):
     n_clusters = len(np.unique(y))
     n_samples = X.shape[0]
