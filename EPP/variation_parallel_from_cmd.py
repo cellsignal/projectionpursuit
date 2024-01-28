@@ -355,7 +355,8 @@ def single_projection(param):
     hist, xedges, yedges = np.histogram2d(X[:, 0], X[:, 1], (xedges, yedges))
     # hist, xedges, yedges = np.histogram2d(X[:, 0], X[:, 1], N)
     zz = hist
-    zz = gaussian(zz, sigma=(sigma, sigma), truncate=3.5)
+    #zz = gaussian(zz, sigma=(sigma, sigma), truncate=3.5)
+    zz = gaussian(zz, sigma=(sigma, sigma), truncate=sigma)
     zz = zz.T
     # print(zz.shape)
     xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
