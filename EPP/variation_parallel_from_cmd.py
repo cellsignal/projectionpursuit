@@ -15,15 +15,19 @@ from multiprocessing import Pool
 
 MAX_WORKERS = 8
 
+start_time = time.time()
+
 fn_in = sys.argv[1]
 fn_out = 'results/results_' + fn_in
 fn_out_txt = 'split_projections.txt'
 
 min_cluster_size = int(sys.argv[2])
-h = .01
-sigma = 3
+# h = .01
+# sigma = 3
+sigma = 5
 dq = 0.02
-q2 = 0.1
+# q2 = 0.1
+betta = 0.1
 ndim = int(sys.argv[3])
 max_dj = 5
 draw_all = True
@@ -78,7 +82,23 @@ def find_saddle_points(mat):
                 saddle_points.append((j, i))
     return saddle_points
 
+def SFun(X, y):
+    n_clusters = len(np.unique(y))
+    n_samples = X.shape[0]
+    overall_mean = X.mean(axis=0)
 
+    centroid = np.zeros((n_clusters, X.shape[1]))
+    ssb, ssw = 0, 0
+    for n_cluster in range(n_clusters):
+        i = np.where(y==n_cluster)[0]
+        ni = len(i)
+        centroid[n_cluster, :] = X[i].mean(axis=0)
+        ssb += ni * np.linalg.norm(centroid[n_cluster] - overall_mean)**2
+        for xx in X[i, :]:
+            ssw += np.linalg.norm(centroid[n_cluster] - xx)**2 / ni
+    SF = ssb / ssw / n_samples / n_clusters
+    return SF
+    
 class Result:
     xxx = None
     yyy = None
@@ -128,6 +148,7 @@ def minimize(xx, yy, zz, q, max_dj):
     zz0 = np.power(yy - (q * yy_[-1] + (1 - q) * yy_[0]), 2)
     #print(zz.shape)
     #print(zz0.shape)
+    q2 = (zz.max()-zz.min()) / zz0.max() * betta
     zz1 = zz + q2 * zz0
     ii = np.arange(n)
     jj = []
@@ -325,7 +346,10 @@ def single_projection(param):
     y_min_0, y_max_0 = X0[:, 1].min(), X0[:, 1].max()
     x_min, x_max = 0, 1
     y_min, y_max = 0, 1
-    N = int(1 / h)
+    # N = int(1 / h)
+    szz=len(X)
+    N = int(2*sigma*(np.power((szz-1)*(szz-1)*3/4, 0.1)*2))
+    h = 1/N
     xedges, yedges = np.linspace(x_min, x_max, N + 1), np.linspace(y_min, y_max, N + 1)
     # print(xedges)
     hist, xedges, yedges = np.histogram2d(X[:, 0], X[:, 1], (xedges, yedges))
@@ -356,7 +380,8 @@ def single_projection(param):
                 split_data_by_separatrix(res.xxx, res.yyy, data_for_calc, index1, index2)
             res.split_results = split_results
             if len(split_results) > 1:
-                res.score = metrics.calinski_harabasz_score(split_results_2, split_labels)
+                # res.score = metrics.calinski_harabasz_score(split_results_2, split_labels)
+                res.score = SFun(split_results_2, split_labels)
             else:
                 res.score = 0.0
     print('results found: {0}'.format(len(results)))
@@ -505,12 +530,16 @@ if __name__ == '__main__':
     t1 = time.time()
     print('splitting done ', t1 - t0)
 
+    print('')    
+    print('number of clusters = ', len(cluster_results))
+    
     for i in range(len(cluster_results)):
         cluster_data = []
         for row in cluster_results[i]:
             row2 = np.append(row, i)
             cluster_data.append(row2)
-        print(len(cluster_data))
+        # print(len(cluster_data))
+        print('size of cluster', i, ' = ', len(cluster_data))
         array = np.array(cluster_data)
         if i == 0:
             result_array = array
@@ -523,6 +552,23 @@ if __name__ == '__main__':
     np.savetxt(fn_out, result_array,
                fmt='%s', header=','.join(headers),
                delimiter=',', comments='')
+
+    if len(cluster_results) > 1:
+        #sc = metrics.calinski_harabasz_score(result_array, result_array[:,ndim])
+        sc = SFun(result_array, result_array[:,ndim])
+    else:
+        sc = 0.0
+
+# print('sigma = ', sigma)
+# print('betta = ', betta)
+# print('Calinski-Harabasz score = ', sc)
+
+# end time
+end_time = time.time()
+
+# elapsed time
+elapsed_time = end_time - start_time
+print('total elapsed time: ', elapsed_time, 's')
 
     with open(fn_out_txt, 'w') as txt_file:
         txt_file.write('step\tindex1\tindex2\n')
