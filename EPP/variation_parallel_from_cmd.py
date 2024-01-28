@@ -559,16 +559,16 @@ if __name__ == '__main__':
     else:
         sc = 0.0
 
-# print('sigma = ', sigma)
-# print('betta = ', betta)
-# print('Calinski-Harabasz score = ', sc)
+    # print('sigma = ', sigma)
+    # print('betta = ', betta)
+    # print('Calinski-Harabasz score = ', sc)
 
-# end time
-end_time = time.time()
+    # end time
+    end_time = time.time()
 
-# elapsed time
-elapsed_time = end_time - start_time
-print('total elapsed time: ', elapsed_time, 's')
+    # elapsed time
+    elapsed_time = end_time - start_time
+    print('total elapsed time: ', elapsed_time, 's')
 
     with open(fn_out_txt, 'w') as txt_file:
         txt_file.write('step\tindex1\tindex2\n')
