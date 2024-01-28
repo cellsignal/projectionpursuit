@@ -342,7 +342,8 @@ def split_iteration(step, data_list, data_for_calc_0):
                     hist, xedges, yedges = np.histogram2d(X[:, 0], X[:, 1], (xedges, yedges))
                     zz = hist
                     # build the density of points using the histogram:
-                    zz = gaussian(zz, sigma=(sigma, sigma), truncate=3.5)
+                    # zz = gaussian(zz, sigma=(sigma, sigma), truncate=3.5)
+                    zz = gaussian(zz, sigma=(sigma, sigma), truncate=sigma)
                     zz = zz.T
                     xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
                     xx_ = xx[0, :]
