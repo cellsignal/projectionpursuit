@@ -1,0 +1,3 @@
+ground truth score: 1247.6955978724268
+phenograph score: 2130.64724854822
+projection pursuit score: 3771.531516955127

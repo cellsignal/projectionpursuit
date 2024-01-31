@@ -1,0 +1,77 @@
+parallel, 8 workers, 271 KB:
+
+cluster 0 size: 395
+cluster 1 size: 2728
+cluster 2 size: 550
+cluster 3 size: 2746
+total time elapsed:  44.45142936706543
+
+consistent, 271 KB:
+
+cluster 0 size: 395
+cluster 1 size: 2728
+cluster 2 size: 550
+cluster 3 size: 2746
+total time elapsed:  64.8825170993805
+
+parallel, 8 workers, 1424 KB:
+
+cluster 0 size: 324
+cluster 1 size: 529
+cluster 2 size: 431
+cluster 3 size: 498
+cluster 4 size: 550
+cluster 5 size: 609
+cluster 6 size: 522
+cluster 7 size: 305
+cluster 8 size: 2340
+cluster 9 size: 5864
+cluster 10 size: 746
+cluster 11 size: 1136
+cluster 12 size: 2260
+cluster 13 size: 609
+cluster 14 size: 1220
+cluster 15 size: 326
+cluster 16 size: 547
+cluster 17 size: 317
+cluster 18 size: 2475
+cluster 19 size: 1640
+cluster 20 size: 8567
+cluster 21 size: 532
+cluster 22 size: 776
+cluster 23 size: 335
+cluster 24 size: 478
+cluster 25 size: 655
+cluster 26 size: 483
+total time elapsed:  353.29193449020386
+
+consistent, 1424 KB:
+
+cluster 0 size: 324
+cluster 1 size: 529
+cluster 2 size: 431
+cluster 3 size: 2340
+cluster 4 size: 5864
+cluster 5 size: 317
+cluster 6 size: 2475
+cluster 7 size: 1640
+cluster 8 size: 8567
+cluster 9 size: 498
+cluster 10 size: 550
+cluster 11 size: 746
+cluster 12 size: 1136
+cluster 13 size: 2260
+cluster 14 size: 609
+cluster 15 size: 609
+cluster 16 size: 1220
+cluster 17 size: 326
+cluster 18 size: 547
+cluster 19 size: 532
+cluster 20 size: 776
+cluster 21 size: 335
+cluster 22 size: 478
+cluster 23 size: 655
+cluster 24 size: 483
+cluster 25 size: 522
+cluster 26 size: 305
+total time elapsed:  557.7369091510773
