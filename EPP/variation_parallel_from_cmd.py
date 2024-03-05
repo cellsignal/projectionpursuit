@@ -359,7 +359,8 @@ def single_projection(param):
     zz = gaussian(zz, sigma=(sigma, sigma), truncate=sigma)
     zz = zz.T
     # print(zz.shape)
-    xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+    #xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+    xx, yy = np.meshgrid(np.linspace(x_min, x_max, N), np.linspace(y_min, y_max, N))
     xx_ = xx[0, :]
     (n,) = xx_.shape
     yy_ = yy[:, 0]
