@@ -348,7 +348,7 @@ def single_projection(param):
     y_min, y_max = 0, 1
     # N = int(1 / h)
     szz=len(X)
-    N = int(3*sigma*int(np.power((szz-1)*(szz-1)*3/4, 0.1)*2))
+    N = int(2*sigma*int(np.power((szz-1)*(szz-1)*3/4, 0.1)*2))
     h = 1/N
     xedges, yedges = np.linspace(x_min, x_max, N + 1), np.linspace(y_min, y_max, N + 1)
     # print(xedges)
