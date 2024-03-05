@@ -345,7 +345,8 @@ def split_iteration(step, data_list, data_for_calc_0):
                     # zz = gaussian(zz, sigma=(sigma, sigma), truncate=3.5)
                     zz = gaussian(zz, sigma=(sigma, sigma), truncate=sigma)
                     zz = zz.T
-                    xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+                    #xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+                    xx, yy = np.meshgrid(np.linspace(x_min, x_max, N), np.linspace(y_min, y_max, N))
                     xx_ = xx[0, :]
                     (n,) = xx_.shape
                     yy_ = yy[:, 0]
