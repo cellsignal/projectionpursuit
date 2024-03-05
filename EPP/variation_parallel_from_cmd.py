@@ -23,8 +23,8 @@ fn_out_txt = 'split_projections.txt'
 
 min_cluster_size = int(sys.argv[2])
 # h = .01
-# sigma = 3
-sigma = 5
+sigma = 3
+#sigma = 5
 dq = 0.02
 # q2 = 0.1
 betta = 0.1
@@ -348,7 +348,7 @@ def single_projection(param):
     y_min, y_max = 0, 1
     # N = int(1 / h)
     szz=len(X)
-    N = 2*sigma*int(np.power((szz-1)*(szz-1)*3/4, 0.1)*2)
+    N = int(3*sigma*int(np.power((szz-1)*(szz-1)*3/4, 0.1)*2))
     h = 1/N
     xedges, yedges = np.linspace(x_min, x_max, N + 1), np.linspace(y_min, y_max, N + 1)
     # print(xedges)
