@@ -20,7 +20,7 @@ fn_out = 'results/results_' + fn_in
 min_cluster_size = int(sys.argv[2])
 # h = .01
 # Gaussian smoothing width:
-sigma = 5
+sigma = 3
 
 dq = 0.02
 # q2 = 0.1
@@ -333,7 +333,7 @@ def split_iteration(step, data_list, data_for_calc_0):
                     #  sum of histogram elements:
                     szz=len(X)
                     #  optimal number of histogram partitions:
-                    N = 2*sigma*int(np.power((szz-1)*(szz-1)*3/4, 0.1)*2)
+                    N = int(3*sigma*int(np.power((szz-1)*(szz-1)*3/4, 0.1)*2))
                     h = 1/N
                     
                     # build a grid:
