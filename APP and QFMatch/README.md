@@ -1,6 +1,5 @@
-Please see README_APP_and_QFMatch.py python script or README_APP_and_QFMatch.sh shell script. 
+Please refer to the README_APP_and_QFMatch.py Python script or README_APP_and_QFMatch.sh shell script.
 
-Try to run one of them to reproduce results.
+Attempt to execute either of them to replicate the results.
 
-You may need to install python dependencies with deps_python.sh shell script.
-
+You might need to install Python dependencies using the deps_python.sh shell script.
