@@ -19,14 +19,14 @@ draw_all = False
 cluster_results = []
 
 
-# ищет индекс ближайшего значения в массиве:
+# search for the index of the closest value in the array:
 def find_nearest_idx(array, value):
     array = np.asarray(array)
     idx = (np.abs(array - value)).argmin()
     return idx
 
 
-# не используется
+# not used
 def sign_change_count(list):
     count = 0
     for i in range(len(list) - 1):
@@ -35,7 +35,7 @@ def sign_change_count(list):
     return count
 
 
-# не используется
+# not used
 def is_saddle_point(mat, i, j):
     list = []
     list.append(mat[i - 1, j - 1] - mat[i, j])
@@ -50,7 +50,7 @@ def is_saddle_point(mat, i, j):
     return sign_change_count(list) == 4
 
 
-# не используется
+# not used
 def find_saddle_points(mat):
     (H, W) = mat.shape
     saddle_points = []
@@ -99,32 +99,32 @@ def sum_along_y_max(zz):
     return np.sum(zz[-1, :])
 
 
-# ищет экстремаль с параметром q:
+# search for an extremal with parameter q:
 def minimize(xx, yy, zz, q, max_dj):
     err = 0.0
     xx_ = xx[0, :]
     (n,) = xx_.shape
     yy_ = yy[:, 0]
     (m,) = yy_.shape
-    # "притяжение" к параболе
+    # "attraction" to the parabola
     zz0 = np.power(yy - (q * yy_[-1] + (1 - q) * yy_[0]), 2)
     zz1 = zz + q2 * zz0
     ii = np.arange(n)
     jj = []
     jj.append(int(q * m))
-    # для всех координат по x:
+    # for all x coordinates:
     for i in np.arange(n - 1):
         j = jj[i]
-        # значения функции z:
+        # z function values:
         zzz = []
-        # координата по y:
+        # y coordinate:
         jjj = []
         dj = [0]
         for ddj in range(max_dj):
             dj.append(ddj)
             dj.append(-ddj)
         dj.sort()
-        # ищем координату по y, в которой значение z минимально:
+        # searching for the y coordinate where the z value is minimal:
         for ddj in dj:
             jjj.append(j + ddj)
             if 0 <= j + ddj <= m - 1:
@@ -135,13 +135,13 @@ def minimize(xx, yy, zz, q, max_dj):
         k = zzz.index(z)
         jj.append(jjj[k])
         ddj = dj[k]
-        # прибавляем значение z к интегралу:
+        # add the z value to the integral:
         err += (zz[j, i] + zz[j + ddj, i + 1]) / 2
-    # координаты экстремали:
+    # extreme coordinates:
     xxx = xx_[ii]
     yyy = yy_[jj]
 
-    # создаем объект для результата:
+    # create an object for the result:
     res = Result()
     res.xxx = xxx
     res.yyy = yyy
@@ -152,12 +152,12 @@ def minimize(xx, yy, zz, q, max_dj):
     return res
 
 
-# разделяет данные data на две части по сепаратриссе xxx, yyy:
-# xxx, yyy - координаты сепаратриссы
+# divide the data into two parts along the separatrix xxx, yyy:
+# xxx, yyy - separatrix coordinates
 def split_data_by_separatrix(xxx, yyy, data, index1, index2):
-    # нужная проекция:
+    # required projection:
     X = data[:, [index1, index2]]
-    # результаты разделения:
+    # split results:
     split_results = []
     actual_data_1 = []
     actual_data_2 = []
@@ -180,7 +180,7 @@ def split_data_by_separatrix(xxx, yyy, data, index1, index2):
     return split_results, split_results_2, split_labels
 
 
-# рисует результаты разделения:
+# plot the results of the split:
 def draw_split_results(step, proj, split_results):
     for i in range(len(split_results)):
         actual_data = split_results[i]
@@ -210,7 +210,7 @@ def draw_split_results(step, proj, split_results):
         # plt.close(fig)
 
 
-# рисует результаты разделения:
+# plot the results of the split:
 def draw_split_results_2(step, proj, split_results):
     # fig = plt.figure()
     # ax = fig.gca()
@@ -240,7 +240,7 @@ def draw_split_results_2(step, proj, split_results):
     # plt.close(fig)
 
 
-# рисует проекцию:
+# draw a projection:
 def draw_projection(step, proj, data):
     # fig = plt.figure()
     # ax = fig.gca()
@@ -252,10 +252,10 @@ def draw_projection(step, proj, data):
     (H, W) = X.shape
     labels = [0] * H
     labels = np.array(labels)
-    #ax.pcolor(proj.xx, proj.yy, proj.zz)
-    #ax.contourf(proj.xx, proj.yy, proj.zz, 300, alpha=0.4)
-    #ax.contourf(proj.xx, proj.yy, proj.zz, 300, alpha=0.4)
-    #ax.plot(proj.result.xxx, proj.result.yyy)
+    # ax.pcolor(proj.xx, proj.yy, proj.zz)
+    # ax.contourf(proj.xx, proj.yy, proj.zz, 300, alpha=0.4)
+    # ax.contourf(proj.xx, proj.yy, proj.zz, 300, alpha=0.4)
+    # ax.plot(proj.result.xxx, proj.result.yyy)
     x_ = proj.x_min + X[:, 0] * (proj.x_max - proj.x_min)
     y_ = proj.y_min + X[:, 1] * (proj.y_max - proj.y_min)
     ax.scatter(x_, y_, c=labels, alpha=0.8)
@@ -264,42 +264,42 @@ def draw_projection(step, proj, data):
     # plt.close(fig)
 
 
-# рекурсивная итерация разделения:
+# recursive split iteration:
 def split_iteration(step, data_list, data_for_calc_0):
-    # s: 0 или 1
+    # s: 0 or 1
     for s in range(len(data_list)):
         data_for_calc = np.array(data_list[s])
 
-        # пропускаем шаг, если данных слишком мало:
+        # skip the step if there is too little data:
         (W, H) = data_for_calc.shape
         if (W < 2 * min_cluster_size):
             cluster_results.append(data_for_calc)
             print('skipping step')
             continue
 
-        # массив проекций:
+        # array of projections:
         projections = []
 
         t0 = time.time()
-        # пробегаем по всем индексам:
+        # go through all the indexes:
         for index1 in range(ndim_variation):
             for index2 in range(ndim_variation):
                 if index2 > index1 or index2 < index1:
-                    # данные с нормированными осями x, y:
+                    # data with normalized x, y axes:
                     X = data_for_calc[:, [index1, index2]]
-                    # оригинальные данные:
+                    # original data:
                     X0 = data_for_calc_0[:, [index1, index2]]
                     x_min_0, x_max_0 = X0[:, 0].min(), X0[:, 0].max()
                     y_min_0, y_max_0 = X0[:, 1].min(), X0[:, 1].max()
                     x_min, x_max = 0, 1
                     y_min, y_max = 0, 1
                     N = int(1/h)
-                    # строим сетку:
+                    # build a grid:
                     xedges, yedges = np.linspace(x_min, x_max, N + 1), np.linspace(y_min, y_max, N + 1)
-                    # строим гистограмму:
+                    # build a histogram:
                     hist, xedges, yedges = np.histogram2d(X[:, 0], X[:, 1], (xedges, yedges))
                     zz = hist
-                    # строим плотность точек по гистограмме:
+                    # build the density of points using the histogram:
                     zz = gaussian(zz, sigma=(sigma, sigma), truncate=3.5)
                     zz = zz.T
                     xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
@@ -309,7 +309,7 @@ def split_iteration(step, data_list, data_for_calc_0):
                     (m,) = yy_.shape
 
                     results0 = []
-                    # для каждого значения параметра ищем экстремаль:
+                    # search for an extremal for each parameter value:
                     for q in np.arange(0, 1, dq):
                         res = minimize(xx, yy, zz, q, max_dj)
                         results0.append(res)
@@ -318,22 +318,22 @@ def split_iteration(step, data_list, data_for_calc_0):
                         res_l = results0[i - 1]
                         res_r = results0[i + 1]
                         res = results0[i]
-                        # если ошибка по экстремали меньше, чем ошибка нижнего и верхнего соседа
-                        # то это "настоящая" экстремаль
+                        # if the error along the extremal is less than the error of the lower and upper neighbors
+                        # then this is the “real” extremal
                         if res.err < res_l.err and res.err < res_r.err:
-                            # добавляем к результатам по проекции:
+                            # add to the projection results:
                             results.append(res)
-                            # пытаемся разделить данные по сепаратриссе:
+                            # attempt to split data by separatrix:
                             split_results, split_results_2, split_labels = \
                                 split_data_by_separatrix(res.xxx, res.yyy, data_for_calc, index1, index2)
-                            # если успешно разделилось, ищем score:
+                            # if it splits successfully, look for score:
                             if len(split_results) > 1:
                                 res.score = metrics.calinski_harabasz_score(split_results_2, split_labels)
                             else:
                                 res.score = 0.0
                     print('results found: {0}'.format(len(results)))
 
-                    # создаем объект проекции:
+                    # create a projection object:
                     proj = Projection()
                     proj.index1 = index1
                     proj.index2 = index2
@@ -346,21 +346,21 @@ def split_iteration(step, data_list, data_for_calc_0):
                     proj.zz = zz
                     proj.data = data_for_calc
 
-                    # рисуем проекцию, если опция включена:
+                    # draw the projection if the option is enabled:
                     if draw_all:
                         draw_projection(step * 10 + s + 1, proj, data_for_calc)
 
-                    # если найдены результаты:
+                    # if results found:
                     if len(results) > 0:
-                        # ищем результат с максимальным score
+                        # search for the result with the maximum score:
                         min_res = max(results, key=attrgetter('score'))
                         proj.err = min_res.err
                         proj.score = min_res.score
                         proj.result = min_res
-                        # добавляем проекцию в массив:
+                        # add the projection to the array:
                         projections.append(proj)
                         print('projection: {0}, {1}, {2}, {3}'.format(step * 10 + s + 1, index1, index2, proj.score))
-                        # рисуем, если включена опция:
+                        # draw if the option is enabled:
                         if draw_all:
                             draw_projection(step * 10 + s + 1, proj, data_for_calc)
                             split_results, split_results_2, split_labels = split_data_by_separatrix(
@@ -369,24 +369,24 @@ def split_iteration(step, data_list, data_for_calc_0):
                                 draw_split_results_2(step * 10 + s + 1, proj, split_results)
 
         if len(projections) > 0:
-            # ищем среди всех проекций с максимальным score:
+            # search among all projections with the maximum score:
             min_proj = max(projections, key=attrgetter('score'))
             index1 = min_proj.index1
             index2 = min_proj.index2
             xxx = min_proj.result.xxx
             yyy = min_proj.result.yyy
             data = min_proj.data
-            # пробуем разделить:
+            # attempt to split:
             split_results, split_results_2, split_labels = split_data_by_separatrix(xxx, yyy, data, index1, index2)
             if len(split_results) > 1:
                 print('{0}, {1}'.format(len(split_results[0]), len(split_results[1])))
                 draw_split_results(step * 10 + s + 1, min_proj, split_results)
                 t1 = time.time()
                 print('iteration done, time elapsed: ', t1 - t0)
-                # успешно разделилось, идем на следующий шаг рекурсии:
+                # splitted, go to the next recursion step:
                 split_iteration(step * 10 + s + 1, split_results, data_for_calc_0)
             else:
-                # не разделилось, добавляем результат к результатам кластеризации:
+                # not splitted, add the result to the clustering results:
                 cluster_results.append(split_results[0])
                 t1 = time.time()
                 print('iteration done, time elapsed: ', t1 - t0)
@@ -409,7 +409,7 @@ def APP(data_for_calc_param, min_cluster_size_param, ndim_variation_param, max_w
 
     data_for_calc = np.copy(data_for_calc_param)
 
-    # создаем и чистим папки:
+    # create and clean folders:
     if not os.path.exists('all_proj'):
         os.makedirs('all_proj')
     dir = os.listdir('all_proj')
@@ -429,7 +429,7 @@ def APP(data_for_calc_param, min_cluster_size_param, ndim_variation_param, max_w
         if file.endswith('.png'):
             os.remove('split/' + file)
 
-    # оригинал данных:
+    # original data:
     data_for_calc_0 = np.copy(data_for_calc)
     (H, W) = data_for_calc.shape
     ii = np.arange(H)
@@ -437,19 +437,19 @@ def APP(data_for_calc_param, min_cluster_size_param, ndim_variation_param, max_w
     for i in range(ndim_variation):
         a = data_for_calc[:, i]
         a = np.interp(a, (a.min(), a.max()), (0, 1))
-        # нормируем данные по x и y:
+        # normalization of data by x and y:
         data_for_calc[:, i] = a
 
     data_for_calc = np.column_stack((data_for_calc, ii, data_for_calc_0))
 
     t0 = time.time()
-    # заходим на нулевой шаг рекурсии:
+    # go to the zero step of the recursion:
     split_iteration(0, [data_for_calc], data_for_calc_0)
     t1 = time.time()
     print('splitting done, time elapsed: ', t1 - t0)
 
-    # cluster_results - глобальная переменная
-    # собираем исходные данные и номера полученных кластеров в массив:
+    # cluster_results - global variable
+    # collect the initial data and numbers of the resulting clusters into an array:
     for i in range(len(cluster_results)):
         cluster_data = []
         for row in cluster_results[i]:
@@ -462,7 +462,7 @@ def APP(data_for_calc_param, min_cluster_size_param, ndim_variation_param, max_w
         else:
             result_array = np.row_stack([result_array, array])
 
-    # сохраняем результаты:
+    # save the results:
     result_array = result_array[result_array[:, ndim_variation].argsort()]
     result_array = result_array[:, ndim_variation+1:]
 
