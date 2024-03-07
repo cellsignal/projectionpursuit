@@ -67,11 +67,16 @@ _RIGHT_FILENAME = 'dml/' + right + fn_in + '.csv'
 _PNG_FILENAME = 'png/' + fn_in + '_' + left + right + 'match.png'
 _MATCH_RESULT_FILENAME = 'match_result/' + fn_in + '_' + left + right + 'match_result.csv'
 _MISCLASSIFICATION_FILENAME = 'misclassification/' + fn_in + '_' + left + right + 'misclassification.txt'
-
+_RUN_STATS_FILENAME = 'run_stats/' + fn_in + '_' + left + right +  'run_stats.txt'
 # Minimal bin size for binning the mix.
 _BIN_SIZE = int(sys.argv[3])
 
 ndim = int(sys.argv[4])
+
+if len(sys.argv) > 5:
+    MAX_WORKERS = int(sys.argv[5])
+else:
+    MAX_WORKERS = 8
 
 # How many first rows in data files contain bogus data (headers, description
 # etc)
@@ -136,16 +141,16 @@ def iteration(param):
         d = _CalculateDissimilarityBetweenClusters(
             left_cluster_id, left_bin_collection, right_cluster_id,
             right_bin_collection)
-        print('Left cluster: %s, Right cluster: %s, dissimilarity: %s' % (
-            d.left_cluster_id, d.right_cluster_id, d.dissimilarity_score))
+        # print('Left cluster: %s, Right cluster: %s, dissimilarity: %s' % (
+        #     d.left_cluster_id, d.right_cluster_id, d.dissimilarity_score))
         return d
     else:
-        print(('Left cluster %s median is not within %s sigma from right '
-               'cluster %s median and vice versa. Dissimilarity won\'t be '
-               'calculated') % (
-                  left_cluster_id,
-                  _SIGMA_MULTIPLIER_TO_CONSIDER_CLUSTERS_WITH_MEDIAN_WITHIN,
-                  right_cluster_id))
+        # print(('Left cluster %s median is not within %s sigma from right '
+        #        'cluster %s median and vice versa. Dissimilarity won\'t be '
+        #        'calculated') % (
+        #           left_cluster_id,
+        #           _SIGMA_MULTIPLIER_TO_CONSIDER_CLUSTERS_WITH_MEDIAN_WITHIN,
+        #           right_cluster_id))
         return None
 
 
@@ -538,8 +543,8 @@ class _Matcher(object):
 
         with Pool(MAX_WORKERS) as p:
             paramList = []
-            print(len(self._left_bin_collection_by_cluster_id.items()),
-                  len(self._left_bin_collection_by_cluster_id.items()))
+            print('left clusters count:', len(self._left_bin_collection_by_cluster_id.items()),
+                  '; right clusters count:', len(self._right_bin_collection_by_cluster_id.items()))
             for left_cluster_id, left_bin_collection in \
                     (iter(self._left_bin_collection_by_cluster_id.items())):
                 for right_cluster_id, right_bin_collection in \
@@ -583,21 +588,21 @@ class _Matcher(object):
             if diss.right_cluster_id in closest_for_right:
                 if (closest_for_right[diss.right_cluster_id].left_cluster_id
                         == left_cluster_id):
-                    print(('Left cluster: %s. Closest right cluster: %s. '
-                           'Closest left cluster for the right cluster: %s. Matches.') % (
-                              left_cluster_id, diss.right_cluster_id,
-                              closest_for_right[diss.right_cluster_id].left_cluster_id))
+                    # print(('Left cluster: %s. Closest right cluster: %s. '
+                    #        'Closest left cluster for the right cluster: %s. Matches.') % (
+                    #           left_cluster_id, diss.right_cluster_id,
+                    #           closest_for_right[diss.right_cluster_id].left_cluster_id))
                     self._matched_pairs.append((left_cluster_id, diss.right_cluster_id))
                     # We found the pairs for these clusters, delete them from closests
                     # dicts.
                     del closest_for_right[diss.right_cluster_id]
                     del closest_for_left[left_cluster_id]
-                else:
-                    print(('Left cluster: %s. Closest right cluster: %s. '
-                           'Closest left cluster for the right cluster: %s. '
-                           'Does not match.') % (
-                              left_cluster_id, diss.right_cluster_id,
-                              closest_for_right[diss.right_cluster_id].left_cluster_id))
+                # else:
+                    # print(('Left cluster: %s. Closest right cluster: %s. '
+                    #        'Closest left cluster for the right cluster: %s. '
+                    #        'Does not match.') % (
+                    #           left_cluster_id, diss.right_cluster_id,
+                    #           closest_for_right[diss.right_cluster_id].left_cluster_id))
             else:
                 # Right cluster was already matched to another cluster before.
                 # It likely means that there were 2 left clusters which dissimilarity
@@ -706,6 +711,7 @@ class _Matcher(object):
     def _ExhaustiveMergeOnSinglePair(
             self, matched_left_cluster_id, matched_right_cluster_id,
             left_unmatched_cluster_ids, right_unmatched_cluster_ids):
+
         # List of left cluster ids which were not matched to any right cluster
         # initially and which closest cluster on the right is the
         # matched_right_cluster_id.
@@ -1636,12 +1642,16 @@ def clean_collisions(left_lists, right_lists):
 
 
 def main(unused_argv):
+    t0 = time.time()
+
     if not os.path.exists('png'):
         os.makedirs('png')
     if not os.path.exists('match_result'):
         os.makedirs('match_result')
     if not os.path.exists('misclassification'):
         os.makedirs('misclassification')
+    if not os.path.exists('run_stats'):
+        os.makedirs('run_stats')
 
     with open(_LEFT_FILENAME, 'r') as f:
         reader = csv.reader(f, delimiter=',')
@@ -1654,6 +1664,8 @@ def main(unused_argv):
     print(Y1)
     size1 = min(Y1)
     print(size1)
+    left_count = len(Y1)
+    print('left cluster count:', left_count)
 
     with open(_RIGHT_FILENAME, 'r') as f:
         reader = csv.reader(f, delimiter=',')
@@ -1669,6 +1681,8 @@ def main(unused_argv):
     print(Y2)
     size2 = min(Y2)
     print(size2)
+    right_count = len(Y2)
+    print('right cluster count:', right_count)
 
     size = min([size1, size2])
 
@@ -1686,23 +1700,20 @@ def main(unused_argv):
     dict_by_left = {}
     dict_by_right = {}
 
+    for cl in matcher._all_left_points_by_cluster_id:
+        # print('left', cl)
+        dict_by_left[str(cl)] = None
+
+    for cl in matcher._all_right_points_by_cluster_id:
+        dict_by_right[str(cl)] = None
+
     for first, second in matcher._matched_pairs:
         left_list = []
         right_list = []
         left_list.append(first)
-        diss = matcher._GetDissimilarity(first, second).dissimilarity_score
-        # print('{0} {1} {2}'.format(diss, first, second))
         for x in matcher._unmatched_right_by_closest_left_cluster_id[first]:
             right_list.append(x)
-            # diss = matcher._GetDissimilarity(first, x).dissimilarity_score
-            # print('{0} {1} {2}'.format(diss, first, x))
         right_list.append(second)
-        diss = matcher._GetDissimilarity(first, second).dissimilarity_score
-        # print('{0} {1} {2}'.format(diss, first, second))
-        for x in matcher._unmatched_left_by_closest_right_cluster_id[second]:
-            left_list.append(x)
-            # diss = matcher._GetDissimilarity(x, second).dissimilarity_score
-            # print('{0} {1} {2}'.format(diss, x, second))
         if len(left_list) > 0 and len(right_list) > 0:
             left_lists.append(left_list)
             # print(str(cluster.ClusterId.MergeFromMany(left_list)))
@@ -1712,74 +1723,82 @@ def main(unused_argv):
                 dict_by_left[str(cl)] = right_list
             for cl in right_list:
                 dict_by_right[str(cl)] = left_list
-
-    print('dict_by_left')
-    for key in dict_by_left.keys():
-        value = dict_by_left[key]
-        print(str(key), str(cluster.ClusterId.MergeFromMany(value)))
  
-    print('dict_by_right')
-    for key in dict_by_right.keys():
-        value = dict_by_right[key]
-        print(str(key), str(cluster.ClusterId.MergeFromMany(value)))
- 
-    print('_unmatched_left_by_closest_right_cluster_id')
+    print('unmatched left by closest right cluster id:')
     for (key, value) in matcher._unmatched_left_by_closest_right_cluster_id.items():
         value_str = str(cluster.ClusterId.MergeFromMany(value)) if len(value) > 0 else 'empty'
-        print(str(key), value_str)
-        if str(key) not in dict_by_right.keys():
+        print('closest right:', str(key), 'for unmatched left:', value_str)
+        if dict_by_right[str(key)] is None:
             right_list = [key]
             left_list = value
-            right_lists.append(right_list)
-            left_lists.append(left_list)
-            dict_by_right[str(key)] = left_list
+            if len(left_list) > 0:
+                right_lists.append(right_list)
+                left_lists.append(left_list)
+                dict_by_right[str(key)] = left_list
+                for cl in left_list:
+                    if dict_by_left[str(cl)] is None:
+                        dict_by_left[str(cl)] = right_list
         else:
             left_list = dict_by_right[str(key)]
             for cl in value:
                 if cl not in left_list:
                     left_list.append(cl)
+            for cl in left_list:
+                if dict_by_left[str(cl)] is None:
+                    dict_by_left[str(cl)] = right_list
 
-    print('_unmatched_right_by_closest_left_cluster_id')
+    print('unmatched right by closest left cluster id:')
     for (key, value) in matcher._unmatched_right_by_closest_left_cluster_id.items():
         value_str = str(cluster.ClusterId.MergeFromMany(value)) if len(value) > 0 else 'empty'
-        print(str(key), value_str)
-        if str(key) not in dict_by_left.keys():
+        print('closest left:', str(key), 'for unmatched right:', value_str)
+        if dict_by_left[str(key)] is None:
             left_list = [key]
             right_list = value
-            left_lists.append(left_list)
-            right_lists.append(right_list)
-            dict_by_left[str(key)] = right_list
+            if len(right_list) > 0:
+                left_lists.append(left_list)
+                right_lists.append(right_list)
+                dict_by_left[str(key)] = right_list
+                for cl in right_list:
+                    if dict_by_right[str(cl)] is None:
+                        dict_by_right[str(cl)] = left_list
         else:
             right_list = dict_by_left[str(key)]
             for cl in value:
                 if cl not in right_list:
                     right_list.append(cl)
+            for cl in right_list:
+                if dict_by_right[str(cl)] is None:
+                    dict_by_right[str(cl)] = left_list
 
-    print('lists length: ', len(left_lists), len(right_lists))
+    for key in dict_by_left.keys():
+        value = dict_by_left[key]
+        if value is None:
+            print('dict by left: None value at', key)
+            left_lists.append([cluster.ClusterId(float(key))])
+            right_lists.append([])
+        elif len(value) == 0:
+            print('dict by left: Empty list value at', key)
+
+    for key in dict_by_right.keys():
+        value = dict_by_right[key]
+        if value is None:
+            print('dict by right: None value at', key)
+            right_lists.append([cluster.ClusterId(float(key))])
+            left_lists.append([])
+        elif len(value) == 0:
+            print('dict by right: Empty list value at', key)
+
+    print('lists length:', len(left_lists), 'for left;',
+          len(right_lists), 'for right')
+
     collision = 1
     iteration = 0
     while collision == 1:
         print('clean collisions iteration: ', iteration)
         iteration += 1
+        print('lists length before: ', len(left_lists), len(right_lists))
         [collision, left_lists, right_lists] = clean_collisions(left_lists, right_lists)
-        print('lists length: ', len(left_lists), len(right_lists))
-
-    for left_list in left_lists:
-        left_names.append(str(cluster.ClusterId.MergeFromMany(left_list)))
-    for right_list in right_lists:
-        right_names.append(str(cluster.ClusterId.MergeFromMany(right_list)))
-
-    print('left_names: ', left_names)
-    print('right_names: ', right_names)
-
-    all_data = np.append(train_data, test_data, 0)
-    x = all_data[:, 0]
-    x_min = np.min(x)
-    x_max = np.max(x)
-    y = all_data[:, 1]
-    y_min = np.min(y)
-    y_max = np.max(y)
-    print('x_min: {0}; x_max: {1}; y_min: {2}; y_max: {3}'.format(x_min, x_max, y_min, y_max))
+        print('lists length after: ', len(left_lists), len(right_lists))
 
     left_lists_int = []
     right_lists_int = []
@@ -1794,13 +1813,46 @@ def main(unused_argv):
             right_list_int.append(int(float(str(clust))))
         right_lists_int.append(right_list_int)
 
-    print(left_lists_int)
-    print(right_lists_int)
+    print('left lists int: ', left_lists_int)
+    print('right lists int: ', right_lists_int)
+
+    for left_list_int in left_lists_int:
+        if len(left_list_int) == 0:
+            left_names.append('no match')
+        else:
+            left_names.append('+'.join(map(str, left_list_int)))
+    for right_list_int in right_lists_int:
+        if len(right_list_int) == 0:
+            right_names.append('no match')
+        else:
+            right_names.append('+'.join(map(str, right_list_int)))
+
+    print('left names: ', left_names)
+    print('right names: ', right_names)
+
+    all_data = np.append(train_data, test_data, 0)
+    x = all_data[:, 0]
+    x_min = np.min(x)
+    x_max = np.max(x)
+    y = all_data[:, 1]
+    y_min = np.min(y)
+    y_max = np.max(y)
+    print('x_min: {0}; x_max: {1}; y_min: {2}; y_max: {3}'.format(x_min, x_max, y_min, y_max))
 
     (H,) = train_labels.shape
     misclassification = 0
     misclassification_array = np.zeros(len(left_lists_int))
+    H_array = np.zeros(len(left_lists_int))
     misclassification_cell_list = []
+    train_labels_int = train_labels.astype(float).astype(int)
+    for j in range(len(left_lists_int)):
+        H_j = 0
+        left_list_int = left_lists_int[j]
+        for k in range(len(left_list_int)):
+            label = left_list_int[k]
+            (H_k, ) = train_labels_int[np.where(train_labels_int == label)].shape
+            H_j += H_k
+        H_array[j] = H_j
     for i in range(H):
         train_label = int(float(train_labels[i]))
         test_label = int(float(test_labels[i]))
@@ -1813,18 +1865,34 @@ def main(unused_argv):
                 misclassification_array[j] += 1
                 is_cell_misclassified = True
         misclassification_cell_list.append(is_cell_misclassified)
-    print('misclassification: {0} of {1}'.format(misclassification, H))
+    print('misclassified total: {0} of {1}'.format(misclassification, H))
     for j in range(len(left_lists_int)):
-        print('{0}: {1}'.format(left_lists_int[j], misclassification_array[j]))
+        print('misclassified for left cluster {0}: {1}'.format(left_lists_int[j], misclassification_array[j]))
 
     if misclassification > 0:
         left_names.insert(0, 'misclassified')
         right_names.insert(0, 'misclassified')
 
+    H_skip = 0
+
+    for j in range(len(left_lists_int)):
+        H_j = H_array[j]
+        misclassification_j = misclassification_array[j]
+        
     with open(_MISCLASSIFICATION_FILENAME, 'w') as the_file:
-        the_file.write("misclassification: {0} of {1}\n".format(misclassification, H))
+        H_actual = H - H_skip
+        percent_total = 100.0 * misclassification / H_actual
+        the_file.write("misclassification: {0} of {1}, {2}%\n".format(misclassification, H_actual, percent_total))
         for j in range(len(left_lists_int)):
-            the_file.write('{0} | {1}: {2}\n'.format(left_lists_int[j], right_lists_int[j], misclassification_array[j]))
+            H_j = H_array[j]
+            misclassification_j = misclassification_array[j]
+            if misclassification_j >= 0:
+                percent_j = 100.0 * misclassification_j / H_j
+                the_file.write('{0} | {1}: {2} of {3}, {4}%\n'.format(left_lists_int[j], right_lists_int[j],
+                                                                      misclassification_array[j], H_j, percent_j))
+            else:
+                the_file.write('{0} | {1}: {2} of {3}, {4}%\n'.format(left_lists_int[j], right_lists_int[j],
+                                                                      'null', H_j, 'null'))
     the_file.close()
 
     SMALL_SIZE = 5
@@ -1839,8 +1907,6 @@ def main(unused_argv):
     plt.rc('legend', fontsize=SMALL_SIZE)  # legend fontsize
     plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
-    has_no_match = False
-
     colors_train = []
 
     colors_test = []
@@ -1853,55 +1919,65 @@ def main(unused_argv):
             done_test = 0
             left_name = ''
             right_name = ''
-            for right_list in right_lists:
-                for cl in right_list:
-                    if int(float(c_test)) == int(float(str(cl))):
-                        i = right_lists.index(right_list)
-                        right_name = right_names[i + 1]
-                        if is_cell_misclassified:
-                            colors_test.append(0)
-                        else:
-                            colors_test.append(i + 1)
-                        done_test += 1
-                        # break
-            if done_test == 0:
-                # print(c, 'right no match')
-                colors_test.append(len(right_lists) + 1)
-            for left_list in left_lists:
-                for cl in left_list:
-                    if int(float(c_train)) == int(float(str(cl))):
-                        i = left_lists.index(left_list)
-                        left_name = left_names[i + 1]
-                        if is_cell_misclassified:
-                            colors_train.append(0)
-                        else:
-                            colors_train.append(i + 1)
-                        done_train += 1
-                        # break
-            if done_train > 1:
-                print('done_train > 1')
-            if done_train == 0:
-                # print(c, 'right no match')
-                colors_train.append(len(left_lists) + 1)
+            for right_list_int in right_lists_int:
+                if done_test == 0:
+                    for cl in right_list_int:
+                        if c_test == cl:
+                            i = right_lists_int.index(right_list_int)
+                            if misclassification > 0:
+                                right_name = right_names[i + 1]
+                            else:
+                                right_name = right_names[i]
+                            if is_cell_misclassified:
+                                color_test = 0
+                            else:
+                                color_test = i + 1
+                            colors_test.append(color_test)
+                            done_test += 1
+            for left_list_int in left_lists_int:
+                if done_train == 0:
+                    for cl in left_list_int:
+                        if c_train == cl:
+                            i = left_lists_int.index(left_list_int)
+                            if misclassification > 0:
+                                left_name = left_names[i + 1]
+                            else:
+                                left_name = left_names[i]
+                            if is_cell_misclassified:
+                                color_train = 0
+                            else:
+                                color_train = i + 1
+                            colors_train.append(color_train)
+                            done_train += 1
             if done_train == 0 and done_test == 0:
                 match_result_file.write("no_match,no_match,{0}\n".format(is_cell_misclassified))
-                has_no_match = True
             else:
                 match_result_file.write("{0},{1},{2}\n".format(left_name, right_name, is_cell_misclassified))
     match_result_file.close()
+
+    for i in range(len(left_lists_int)):
+        left_list_int = left_lists_int[i]
+        if len(left_list_int) == 0:
+            train_data = np.append(train_data, [[x_min, y_min]], 0)
+            colors_train.append(i + 1)
+            test_data = np.append(test_data, [[x_min, y_min]], 0)
+            colors_test.append(i + 1)
+
+    for i in range(len(right_lists_int)):
+        right_list_int = right_lists_int[i]
+        if len(right_list_int) == 0:
+            train_data = np.append(train_data, [[x_min, y_min]], 0)
+            colors_train.append(i + 1)
+            test_data = np.append(test_data, [[x_min, y_min]], 0)
+            colors_test.append(i + 1)
 
     print("colors train: ", set(colors_train))
     print("colors train size", len(colors_train))
     print("colors test: ", set(colors_test))
     print("colors test size", len(colors_test))
 
-    if has_no_match:
-        left_names.append('no match')
-        right_names.append('no match')
-        train_data = np.append(train_data, [[x_min, y_min]], 0)
-        colors_train.append(len(left_lists) + 1)
-        test_data = np.append(test_data, [[x_min, y_min]], 0)
-        colors_test.append(len(right_lists) + 1)
+    print('final left names: ', left_names)
+    print('final right names: ', right_names)
 
     spectral = cm.get_cmap('Spectral', len(left_names))
     newcolors = spectral(np.linspace(0, 1, len(left_names)))
@@ -1933,9 +2009,22 @@ def main(unused_argv):
     # plt.tight_layout()
     plt.savefig(_PNG_FILENAME, dpi=320)
 
+    t1 = time.time()
+    elapsed_time = t1 - t0
+    print('time elapsed:', elapsed_time, 's')
+
+    with open(_RUN_STATS_FILENAME, 'w') as stats_file:
+        stats_file.write('input left file: {0}\n'.format(_LEFT_FILENAME))
+        stats_file.write('input right file: {0}\n'.format(_RIGHT_FILENAME))
+        stats_file.write('ndim: {0}\n'.format(ndim))
+        stats_file.write('cell count: {0}\n'.format(H))
+        stats_file.write('bin size: {0}\n'.format(_BIN_SIZE))
+        stats_file.write('left clusters count: {0}\n'.format(left_count))
+        stats_file.write('right clusters count: {0}\n'.format(right_count))
+        stats_file.write('workers count: {0}\n'.format(MAX_WORKERS))
+        stats_file.write('total elapsed time: {0} s\n'.format(elapsed_time))
+    stats_file.close()
+
 
 if __name__ == '__main__':
-    t0 = time.time()
     main(None)
-    t1 = time.time()
-    print('done', t1 - t0)

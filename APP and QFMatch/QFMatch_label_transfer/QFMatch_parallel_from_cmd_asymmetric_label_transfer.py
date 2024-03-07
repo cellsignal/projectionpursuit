@@ -46,7 +46,7 @@ from multiprocessing import Pool
 # SETTINGS.
 # TODO: consider moving them to sys.args and let user provide them from CLI.
 
-MAX_WORKERS = 6
+MAX_WORKERS = 4
 
 training_file = sys.argv[1]
 testing_file = sys.argv[2]
@@ -124,16 +124,16 @@ def iteration(param):
         d = _CalculateDissimilarityBetweenClusters(
             left_cluster_id, left_bin_collection, right_cluster_id,
             right_bin_collection)
-        print('Left cluster: %s, Right cluster: %s, dissimilarity: %s' % (
-            d.left_cluster_id, d.right_cluster_id, d.dissimilarity_score))
+        # print('Left cluster: %s, Right cluster: %s, dissimilarity: %s' % (
+        #     d.left_cluster_id, d.right_cluster_id, d.dissimilarity_score))
         return d
     else:
-        print(('Left cluster %s median is not within %s sigma from right '
-               'cluster %s median and vice versa. Dissimilarity won\'t be '
-               'calculated') % (
-                  left_cluster_id,
-                  _SIGMA_MULTIPLIER_TO_CONSIDER_CLUSTERS_WITH_MEDIAN_WITHIN,
-                  right_cluster_id))
+        # print(('Left cluster %s median is not within %s sigma from right '
+        #        'cluster %s median and vice versa. Dissimilarity won\'t be '
+        #        'calculated') % (
+        #           left_cluster_id,
+        #           _SIGMA_MULTIPLIER_TO_CONSIDER_CLUSTERS_WITH_MEDIAN_WITHIN,
+        #           right_cluster_id))
         return None
 
 
@@ -526,8 +526,8 @@ class _Matcher(object):
 
         with Pool(MAX_WORKERS) as p:
             paramList = []
-            print(len(self._left_bin_collection_by_cluster_id.items()),
-                  len(self._right_bin_collection_by_cluster_id.items()))
+            print('left clusters count:', len(self._left_bin_collection_by_cluster_id.items()),
+                  '; right clusters count:', len(self._right_bin_collection_by_cluster_id.items()))
             for left_cluster_id, left_bin_collection in \
                     (iter(self._left_bin_collection_by_cluster_id.items())):
                 for right_cluster_id, right_bin_collection in \
@@ -571,21 +571,21 @@ class _Matcher(object):
             if diss.right_cluster_id in closest_for_right:
                 if (closest_for_right[diss.right_cluster_id].left_cluster_id
                         == left_cluster_id):
-                    print(('Left cluster: %s. Closest right cluster: %s. '
-                           'Closest left cluster for the right cluster: %s. Matches.') % (
-                              left_cluster_id, diss.right_cluster_id,
-                              closest_for_right[diss.right_cluster_id].left_cluster_id))
+                    # print(('Left cluster: %s. Closest right cluster: %s. '
+                    #        'Closest left cluster for the right cluster: %s. Matches.') % (
+                    #           left_cluster_id, diss.right_cluster_id,
+                    #           closest_for_right[diss.right_cluster_id].left_cluster_id))
                     self._matched_pairs.append((left_cluster_id, diss.right_cluster_id))
                     # We found the pairs for these clusters, delete them from closests
                     # dicts.
                     del closest_for_right[diss.right_cluster_id]
                     del closest_for_left[left_cluster_id]
-                else:
-                    print(('Left cluster: %s. Closest right cluster: %s. '
-                           'Closest left cluster for the right cluster: %s. '
-                           'Does not match.') % (
-                              left_cluster_id, diss.right_cluster_id,
-                              closest_for_right[diss.right_cluster_id].left_cluster_id))
+                # else:
+                    # print(('Left cluster: %s. Closest right cluster: %s. '
+                    #        'Closest left cluster for the right cluster: %s. '
+                    #        'Does not match.') % (
+                    #           left_cluster_id, diss.right_cluster_id,
+                    #           closest_for_right[diss.right_cluster_id].left_cluster_id))
             else:
                 # Right cluster was already matched to another cluster before.
                 # It likely means that there were 2 left clusters which dissimilarity
@@ -694,6 +694,7 @@ class _Matcher(object):
     def _ExhaustiveMergeOnSinglePair(
             self, matched_left_cluster_id, matched_right_cluster_id,
             left_unmatched_cluster_ids, right_unmatched_cluster_ids):
+
         # List of left cluster ids which were not matched to any right cluster
         # initially and which closest cluster on the right is the
         # matched_right_cluster_id.
@@ -1634,12 +1635,14 @@ def main(unused_argv):
         headers = next(reader)
         train_data_from_file = np.array(list(reader)).astype(float)
     train_labels = train_data_from_file[:, -3].astype(int)
-    train_umap = train_data_from_file[:, -2:].astype(float)
+    train_data = train_data_from_file[:, -2:].astype(float)
 
     Y1 = [len(list(y)) for x, y in itertools.groupby(np.sort(train_labels.astype(int)))]
     print(Y1)
     size1 = min(Y1)
     print(size1)
+    left_count = len(Y1)
+    print('left cluster count:', left_count)
 
     with open(_RIGHT_FILENAME, 'r') as f:
         reader = csv.reader(f, delimiter=',')
@@ -1648,15 +1651,17 @@ def main(unused_argv):
 
     test_columns_orig = test_data_from_file[:, :-3].astype(float)
     test_labels_orig = test_data_from_file[:, -3].astype(int)
-    test_umap_orig = test_data_from_file[:, -2:].astype(float)
+    test_data_orig = test_data_from_file[:, -2:].astype(float)
 
-    test_umap = test_umap_orig[np.where(test_labels_orig.astype(int) > -1)]
+    test_data = test_data_orig[np.where(test_labels_orig.astype(int) > -1)]
     test_labels = test_labels_orig[np.where(test_labels_orig.astype(int) > -1)]
 
     Y2 = [len(list(y)) for x, y in itertools.groupby(np.sort(test_labels.astype(int)))]
     print(Y2)
     size2 = min(Y2)
     print(size2)
+    right_count = len(Y2)
+    print('right cluster count:', right_count)
 
     size = min([size1, size2])
 
@@ -1672,6 +1677,14 @@ def main(unused_argv):
     right_names = []
 
     dict_by_left = {}
+    dict_by_right = {}
+
+    for cl in matcher._all_left_points_by_cluster_id:
+        # print('left', cl)
+        dict_by_left[str(cl)] = None
+
+    for cl in matcher._all_right_points_by_cluster_id:
+        dict_by_right[str(cl)] = None
 
     for first, second in matcher._matched_pairs:
         left_list = []
@@ -1687,32 +1700,31 @@ def main(unused_argv):
             # print(str(cluster.ClusterId.MergeFromMany(right_list)))
             for cl in left_list:
                 dict_by_left[str(cl)] = right_list
+            for cl in right_list:
+                dict_by_right[str(cl)] = left_list
 
-    print('dict_by_left')
-    for key in dict_by_left.keys():
-        value = dict_by_left[key]
-        print(str(key), str(cluster.ClusterId.MergeFromMany(value)))
-
-    print('_unmatched_right_by_closest_left_cluster_id')
+    print('unmatched right by closest left cluster id:')
     for (key, value) in matcher._unmatched_right_by_closest_left_cluster_id.items():
         value_str = str(cluster.ClusterId.MergeFromMany(value)) if len(value) > 0 else 'empty'
-        print(str(key), value_str)
-        if str(key) not in dict_by_left.keys():
+        print('closest left:', str(key), 'for unmatched right:', value_str)
+        if dict_by_left[str(key)] is None:
             left_list = [key]
             right_list = value
             left_lists.append(left_list)
             right_lists.append(right_list)
             dict_by_left[str(key)] = right_list
+            for right_cl in right_list:
+                dict_by_right[str(right_cl)] = [key]
         else:
             right_list = dict_by_left[str(key)]
             for cl in value:
                 if cl not in right_list:
                     right_list.append(cl)
  
-    print('_unmatched_left_by_closest_right_cluster_id')
+    print('unmatched left by closest right cluster id:')
     for (key, value) in matcher._unmatched_left_by_closest_right_cluster_id.items():
         value_str = str(cluster.ClusterId.MergeFromMany(value)) if len(value) > 0 else 'empty'
-        print(str(key), value_str)
+        print('closest right:', str(key), 'for unmatched left:', value_str)
         right_list = []
         for cl in value:
             if str(cl) not in dict_by_left.keys():
@@ -1720,27 +1732,27 @@ def main(unused_argv):
                 right_lists.append(right_list)
                 left_lists.append(left_list)
 
-    print('lists length: ', len(left_lists), len(right_lists))
+    for key in dict_by_left.keys():
+        value = dict_by_left[key]
+        if value is None:
+            print('dict by left: None value at', key)
+            left_lists.append([cluster.ClusterId(float(key))])
+            right_lists.append([])
+        elif len(value) == 0:
+            print('dict by left: Empty list value at', key)
 
-    for left_list in left_lists:
-        left_names.append(str(cluster.ClusterId.MergeFromMany(left_list)))
-    for right_list in right_lists:
-        if len(right_list) == 0:
-            right_names.append('no match')
-        else:
-            right_names.append(str(cluster.ClusterId.MergeFromMany(right_list)))
+    for key in dict_by_right.keys():
+        value = dict_by_right[key]
+        if value is None:
+            print('dict by right: None value at', key)
+            new_cluster_id = len(right_lists) + 1000
+            right_lists.append([cluster.ClusterId(float(new_cluster_id))])
+            left_lists.append([])
+        elif len(value) == 0:
+            print('dict by right: Empty list value at', key)
 
-    print('left_names: ', left_names)
-    print('right_names: ', right_names)
-
-    all_data = np.append(train_umap, test_umap, 0)
-    x = all_data[:, 0]
-    x_min = np.min(x)
-    x_max = np.max(x)
-    y = all_data[:, 1]
-    y_min = np.min(y)
-    y_max = np.max(y)
-    print('x_min: {0}; x_max: {1}; y_min: {2}; y_max: {3}'.format(x_min, x_max, y_min, y_max))
+    print('lists length:', len(left_lists), 'for left;',
+          len(right_lists), 'for right')
 
     left_lists_int = []
     right_lists_int = []
@@ -1755,13 +1767,31 @@ def main(unused_argv):
             right_list_int.append(int(float(str(clust))))
         right_lists_int.append(right_list_int)
 
-    print(left_lists_int)
-    print(right_lists_int)
+    print('left lists int: ', left_lists_int)
+    print('right lists int: ', right_lists_int)
 
-    left_lists.append([])
-    left_names.append('no match')
-    right_lists.append([])
-    right_names.append('no match')
+    for left_list_int in left_lists_int:
+        if len(left_list_int) == 0:
+            left_names.append('no match')
+        else:
+            left_names.append('+'.join(map(str, left_list_int)))
+    for right_list_int in right_lists_int:
+        if len(right_list_int) == 0:
+            right_names.append('no match')
+        else:
+            right_names.append('+'.join(map(str, right_list_int)))
+
+    print('left names: ', left_names)
+    print('right names: ', right_names)
+
+    all_data = np.append(train_data, test_data, 0)
+    x = all_data[:, 0]
+    x_min = np.min(x)
+    x_max = np.max(x)
+    y = all_data[:, 1]
+    y_min = np.min(y)
+    y_max = np.max(y)
+    print('x_min: {0}; x_max: {1}; y_min: {2}; y_max: {3}'.format(x_min, x_max, y_min, y_max))
 
     SMALL_SIZE = 5
     MEDIUM_SIZE = 7
@@ -1783,19 +1813,13 @@ def main(unused_argv):
         c_train = train_labels[k]
         done_train = 0
         i = 0
-        for left_list in left_lists:
-            for cl in left_list:
-                if c_train == int(float(str(cl))):
-                    i = left_lists.index(left_list)
-                    done_train += 1
-                    # break
-        if done_train > 1:
-            print('done_train > 1')
-        if done_train == 1:
-            colors_train.append(i)
-        if done_train == 0:
-            # print(c_train, 'left no match')
-            colors_train.append(len(left_lists) - 1)
+        for left_list_int in left_lists_int:
+            if done_train == 0:
+                for cl in left_list_int:
+                    if c_train == cl:
+                        i = left_lists_int.index(left_list_int)
+                        colors_train.append(i)
+                        done_train += 1
 
     test_labels_transfer = []
 
@@ -1807,26 +1831,38 @@ def main(unused_argv):
         if c_test < 0:
             test_labels_transfer.append(-1)
             continue
-        for right_list in right_lists:
-            for cl in right_list:
-                if c_test == int(float(str(cl))):
-                    i = right_lists.index(right_list)
-                    done_test += 1
-                    # break
-        if done_test > 1:
-            print('done_train > 1')
+        for right_list_int in right_lists_int:
+            if done_test == 0:
+                for cl in right_list_int:
+                    if c_test == cl:
+                        i = right_lists_int.index(right_list_int)
+                        done_test += 1
         if done_test == 1:
-            test_labels_transfer.append(left_lists_int[i][0])
+            if len(left_lists_int[i]) > 0:
+                test_labels_transfer.append(left_lists_int[i][0])
+            else:
+                test_labels_transfer.append(right_lists_int[i][0])
             colors_test.append(i)
         if done_test == 0:
             # print(c_test, 'right no match')
             test_labels_transfer.append(-11)
-            colors_test.append(len(right_lists) - 1)
+            colors_test.append(len(right_lists_int) - 1)
 
-    train_umap = np.append(train_umap, [[x_min, y_min]], 0)
-    colors_train.append(len(left_lists) - 1)
-    test_umap = np.append(test_umap, [[x_min, y_min]], 0)
-    colors_test.append(len(right_lists) - 1)
+    for i in range(len(left_lists_int)):
+        left_list_int = left_lists_int[i]
+        if len(left_list_int) == 0:
+            train_data = np.append(train_data, [[x_min, y_min]], 0)
+            colors_train.append(i)
+            test_data = np.append(test_data, [[x_min, y_min]], 0)
+            colors_test.append(i)
+
+    for i in range(len(right_lists_int)):
+        right_list_int = right_lists_int[i]
+        if len(right_list_int) == 0:
+            train_data = np.append(train_data, [[x_min, y_min]], 0)
+            colors_train.append(i)
+            test_data = np.append(test_data, [[x_min, y_min]], 0)
+            colors_test.append(i)
 
     print("colors train: ", set(colors_train))
     print("colors train size", len(colors_train))
@@ -1836,7 +1872,7 @@ def main(unused_argv):
     print("label transfer test size", len(test_labels_transfer))
 
     test_labels_transfer = np.array(test_labels_transfer)
-    result_label_transfer = np.column_stack((test_columns_orig, test_labels_transfer, test_umap_orig))
+    result_label_transfer = np.column_stack((test_columns_orig, test_labels_transfer, test_data_orig))
     print(result_label_transfer.shape)
     np.savetxt(_LABEL_TRANSFER_FILENAME, result_label_transfer,
                fmt='%.5f',
@@ -1852,7 +1888,7 @@ def main(unused_argv):
     ax = fig.add_subplot(121)
 
     colors_train = np.array(colors_train)
-    sc = ax.scatter(*train_umap.T, s=0.3, c=colors_train, cmap=newcmp, alpha=1.0)
+    sc = ax.scatter(*train_data.T, s=0.3, c=colors_train, cmap=newcmp, alpha=1.0)
     plt.setp(ax, xticks=[x_min, x_max, (x_max - x_min) / 4000], yticks=[y_min, y_max, (y_max - y_min) / 4000])
     cbar = plt.colorbar(sc, boundaries=np.arange(len(left_names) + 1) - 0.5)
     cbar.set_ticks(np.arange(len(left_names) + 1))
@@ -1862,7 +1898,7 @@ def main(unused_argv):
     ax = fig.add_subplot(122)
 
     colors_test = np.array(colors_test)
-    sc = ax.scatter(*test_umap.T, s=0.3, c=colors_test, cmap=newcmp, alpha=1.0)
+    sc = ax.scatter(*test_data.T, s=0.3, c=colors_test, cmap=newcmp, alpha=1.0)
     plt.setp(ax, xticks=[x_min, x_max, (x_max - x_min) / 4000], yticks=[y_min, y_max, (y_max - y_min) / 4000])
     cbar = plt.colorbar(sc, boundaries=np.arange(len(right_names) + 1) - 0.5)
     cbar.set_ticks(np.arange(len(right_names) + 1))
@@ -1877,4 +1913,4 @@ if __name__ == '__main__':
     t0 = time.time()
     main(None)
     t1 = time.time()
-    print('done', t1 - t0)
+    print('time elapsed:', t1 - t0)

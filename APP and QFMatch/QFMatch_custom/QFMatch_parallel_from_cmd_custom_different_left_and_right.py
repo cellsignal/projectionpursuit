@@ -54,8 +54,6 @@ testing_file = sys.argv[2]
 _LEFT_FILENAME = training_file
 _RIGHT_FILENAME = testing_file
 _PNG_FILENAME = 'png/' + Path(training_file).stem + '_' + Path(testing_file).stem + '.png'
-_MATCH_RESULT_FILENAME = 'match_result/' + Path(training_file).stem + '_' + Path(testing_file).stem + '_match_result.csv'
-_MISCLASSIFICATION_FILENAME = 'misclassification/' + Path(training_file).stem + '_' + Path(testing_file).stem + '_misclassification.txt'
 
 # Minimal bin size for binning the mix.
 _BIN_SIZE = int(sys.argv[3])
@@ -125,16 +123,16 @@ def iteration(param):
         d = _CalculateDissimilarityBetweenClusters(
             left_cluster_id, left_bin_collection, right_cluster_id,
             right_bin_collection)
-        print('Left cluster: %s, Right cluster: %s, dissimilarity: %s' % (
-            d.left_cluster_id, d.right_cluster_id, d.dissimilarity_score))
+        # print('Left cluster: %s, Right cluster: %s, dissimilarity: %s' % (
+        #     d.left_cluster_id, d.right_cluster_id, d.dissimilarity_score))
         return d
     else:
-        print(('Left cluster %s median is not within %s sigma from right '
-               'cluster %s median and vice versa. Dissimilarity won\'t be '
-               'calculated') % (
-                  left_cluster_id,
-                  _SIGMA_MULTIPLIER_TO_CONSIDER_CLUSTERS_WITH_MEDIAN_WITHIN,
-                  right_cluster_id))
+        # print(('Left cluster %s median is not within %s sigma from right '
+        #        'cluster %s median and vice versa. Dissimilarity won\'t be '
+        #        'calculated') % (
+        #           left_cluster_id,
+        #           _SIGMA_MULTIPLIER_TO_CONSIDER_CLUSTERS_WITH_MEDIAN_WITHIN,
+        #           right_cluster_id))
         return None
 
 
@@ -527,8 +525,8 @@ class _Matcher(object):
 
         with Pool(MAX_WORKERS) as p:
             paramList = []
-            print(len(self._left_bin_collection_by_cluster_id.items()),
-                  len(self._left_bin_collection_by_cluster_id.items()))
+            print('left clusters count:', len(self._left_bin_collection_by_cluster_id.items()),
+                  '; right clusters count:', len(self._right_bin_collection_by_cluster_id.items()))
             for left_cluster_id, left_bin_collection in \
                     (iter(self._left_bin_collection_by_cluster_id.items())):
                 for right_cluster_id, right_bin_collection in \
@@ -572,21 +570,21 @@ class _Matcher(object):
             if diss.right_cluster_id in closest_for_right:
                 if (closest_for_right[diss.right_cluster_id].left_cluster_id
                         == left_cluster_id):
-                    print(('Left cluster: %s. Closest right cluster: %s. '
-                           'Closest left cluster for the right cluster: %s. Matches.') % (
-                              left_cluster_id, diss.right_cluster_id,
-                              closest_for_right[diss.right_cluster_id].left_cluster_id))
+                    # print(('Left cluster: %s. Closest right cluster: %s. '
+                    #        'Closest left cluster for the right cluster: %s. Matches.') % (
+                    #           left_cluster_id, diss.right_cluster_id,
+                    #           closest_for_right[diss.right_cluster_id].left_cluster_id))
                     self._matched_pairs.append((left_cluster_id, diss.right_cluster_id))
                     # We found the pairs for these clusters, delete them from closests
                     # dicts.
                     del closest_for_right[diss.right_cluster_id]
                     del closest_for_left[left_cluster_id]
-                else:
-                    print(('Left cluster: %s. Closest right cluster: %s. '
-                           'Closest left cluster for the right cluster: %s. '
-                           'Does not match.') % (
-                              left_cluster_id, diss.right_cluster_id,
-                              closest_for_right[diss.right_cluster_id].left_cluster_id))
+                # else:
+                    # print(('Left cluster: %s. Closest right cluster: %s. '
+                    #        'Closest left cluster for the right cluster: %s. '
+                    #        'Does not match.') % (
+                    #           left_cluster_id, diss.right_cluster_id,
+                    #           closest_for_right[diss.right_cluster_id].left_cluster_id))
             else:
                 # Right cluster was already matched to another cluster before.
                 # It likely means that there were 2 left clusters which dissimilarity
@@ -1671,6 +1669,14 @@ def main(unused_argv):
     dict_by_left = {}
     dict_by_right = {}
 
+    for cl in matcher._all_left_points_by_cluster_id:
+        # print('left', cl)
+        dict_by_left[str(cl)] = None
+
+    for cl in matcher._all_right_points_by_cluster_id:
+        # print('right', cl)
+        dict_by_right[str(cl)] = None
+
     for first, second in matcher._matched_pairs:
         left_list = []
         right_list = []
@@ -1699,72 +1705,82 @@ def main(unused_argv):
                 dict_by_right[str(cl)] = left_list
 
     print('dict_by_left')
-    for key in dict_by_left.keys():
-        value = dict_by_left[key]
-        print(str(key), str(cluster.ClusterId.MergeFromMany(value)))
  
-    print('dict_by_right')
-    for key in dict_by_right.keys():
-        value = dict_by_right[key]
-        print(str(key), str(cluster.ClusterId.MergeFromMany(value)))
- 
-    print('_unmatched_left_by_closest_right_cluster_id')
+    print('unmatched left by closest right cluster id:')
     for (key, value) in matcher._unmatched_left_by_closest_right_cluster_id.items():
         value_str = str(cluster.ClusterId.MergeFromMany(value)) if len(value) > 0 else 'empty'
-        print(str(key), value_str)
-        if str(key) not in dict_by_right.keys():
+        print('closest right:', str(key), 'for unmatched left:', value_str)
+        if dict_by_right[str(key)] is None:
             right_list = [key]
             left_list = value
-            right_lists.append(right_list)
-            left_lists.append(left_list)
-            dict_by_right[str(key)] = left_list
+            if len(left_list) > 0:
+                right_lists.append(right_list)
+                left_lists.append(left_list)
+                dict_by_right[str(key)] = left_list
+                for cl in left_list:
+                    if dict_by_left[str(cl)] is None:
+                        dict_by_left[str(cl)] = right_list
         else:
             left_list = dict_by_right[str(key)]
             for cl in value:
                 if cl not in left_list:
                     left_list.append(cl)
+            for cl in left_list:
+                if dict_by_left[str(cl)] is None:
+                    dict_by_left[str(cl)] = right_list
 
-    print('_unmatched_right_by_closest_left_cluster_id')
+    print('unmatched right by closest left cluster id:')
     for (key, value) in matcher._unmatched_right_by_closest_left_cluster_id.items():
         value_str = str(cluster.ClusterId.MergeFromMany(value)) if len(value) > 0 else 'empty'
-        print(str(key), value_str)
-        if str(key) not in dict_by_left.keys():
+        print('closest left:', str(key), 'for unmatched right:', value_str)
+        if dict_by_left[str(key)] is None:
             left_list = [key]
             right_list = value
-            left_lists.append(left_list)
-            right_lists.append(right_list)
-            dict_by_left[str(key)] = right_list
+            if len(right_list) > 0:
+                left_lists.append(left_list)
+                right_lists.append(right_list)
+                dict_by_left[str(key)] = right_list
+                for cl in right_list:
+                    if dict_by_right[str(cl)] is None:
+                        dict_by_right[str(cl)] = left_list
         else:
             right_list = dict_by_left[str(key)]
             for cl in value:
                 if cl not in right_list:
                     right_list.append(cl)
+            for cl in right_list:
+                if dict_by_right[str(cl)] is None:
+                    dict_by_right[str(cl)] = left_list
 
-    print('lists length: ', len(left_lists), len(right_lists))
+    for key in dict_by_left.keys():
+        value = dict_by_left[key]
+        if value is None:
+            print('dict by left: None value at', key)
+            left_lists.append([cluster.ClusterId(float(key))])
+            right_lists.append([])
+        elif len(value) == 0:
+            print('dict by left: Empty list value at', key)
+
+    for key in dict_by_right.keys():
+        value = dict_by_right[key]
+        if value is None:
+            print('dict by right: None value at', key)
+            right_lists.append([cluster.ClusterId(float(key))])
+            left_lists.append([])
+        elif len(value) == 0:
+            print('dict by right: Empty list value at', key)
+
+    print('lists length:', len(left_lists), 'for left;',
+          len(right_lists), 'for right')
+
     collision = 1
     iteration = 0
     while collision == 1:
         print('clean collisions iteration: ', iteration)
         iteration += 1
+        print('lists length before: ', len(left_lists), len(right_lists))
         [collision, left_lists, right_lists] = clean_collisions(left_lists, right_lists)
-        print('lists length: ', len(left_lists), len(right_lists))
-
-    for left_list in left_lists:
-        left_names.append(str(cluster.ClusterId.MergeFromMany(left_list)))
-    for right_list in right_lists:
-        right_names.append(str(cluster.ClusterId.MergeFromMany(right_list)))
-
-    print('left_names: ', left_names)
-    print('right_names: ', right_names)
-
-    all_data = np.append(train_data, test_data, 0)
-    x = all_data[:, 0]
-    x_min = np.min(x)
-    x_max = np.max(x)
-    y = all_data[:, 1]
-    y_min = np.min(y)
-    y_max = np.max(y)
-    print('x_min: {0}; x_max: {1}; y_min: {2}; y_max: {3}'.format(x_min, x_max, y_min, y_max))
+        print('lists length after: ', len(left_lists), len(right_lists))
 
     left_lists_int = []
     right_lists_int = []
@@ -1779,13 +1795,40 @@ def main(unused_argv):
             right_list_int.append(int(float(str(clust))))
         right_lists_int.append(right_list_int)
 
-    print(left_lists_int)
-    print(right_lists_int)
+    print('left lists int: ', left_lists_int)
+    print('right lists int: ', right_lists_int)
 
-    left_lists.append([])
-    left_names.append('no match')
-    right_lists.append([])
-    right_names.append('no match')
+    has_no_match = False
+
+    for left_list_int in left_lists_int:
+        if len(left_list_int) == 0:
+            left_names.append('no match')
+            has_no_match = True
+        else:
+            left_names.append('+'.join(map(str, left_list_int)))
+    for right_list_int in right_lists_int:
+        if len(right_list_int) == 0:
+            right_names.append('no match')
+            has_no_match = True
+        else:
+            right_names.append('+'.join(map(str, right_list_int)))
+
+    print('left names: ', left_names)
+    print('right names: ', right_names)
+
+    all_data = np.append(train_data, test_data, 0)
+    x = all_data[:, 0]
+    x_min = np.min(x)
+    x_max = np.max(x)
+    y = all_data[:, 1]
+    y_min = np.min(y)
+    y_max = np.max(y)
+    print('x_min: {0}; x_max: {1}; y_min: {2}; y_max: {3}'.format(x_min, x_max, y_min, y_max))
+  
+    # left_lists.append([])
+    # left_names.append('no match')
+    # right_lists.append([])
+    # right_names.append('no match')
 
     SMALL_SIZE = 5
     MEDIUM_SIZE = 7
@@ -1853,12 +1896,12 @@ def main(unused_argv):
 
     spectral = cm.get_cmap('Spectral', len(left_names))
     newcolors = spectral(np.linspace(0, 1, len(left_names)))
-    red = np.array([1, 0, 0, 1])
-    newcolors[0, :] = red
-    green = np.array([0, 1, 0, 1])
-    newcolors[1, :] = green
-    blue = np.array([0, 0, 1, 1])
-    newcolors[2, :] = blue
+    # red = np.array([1, 0, 0, 1])
+    # newcolors[0, :] = red
+    # green = np.array([0, 1, 0, 1])
+    # newcolors[1, :] = green
+    # blue = np.array([0, 0, 1, 1])
+    # newcolors[2, :] = blue
     newcmp = ListedColormap(newcolors)
 
     fig = plt.figure()
@@ -1890,4 +1933,4 @@ if __name__ == '__main__':
     t0 = time.time()
     main(None)
     t1 = time.time()
-    print('done', t1 - t0)
+    print('time elapsed:', t1 - t0)

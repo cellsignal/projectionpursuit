@@ -11,7 +11,7 @@ class ClusterId(object):
   """
 
   def __init__(self, parts):
-    if not parts:
+    if parts is None:
       raise ValueError('No parts: %s' % parts)
 
     if isinstance(parts, (str, int, float)):
