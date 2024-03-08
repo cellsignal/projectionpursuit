@@ -41,8 +41,8 @@ import csv
 import matplotlib.pyplot as plt
 
 import time
+
 # SETTINGS.
-# TODO: consider moving them to sys.args and let user provide them from CLI.
 
 training_file = sys.argv[1]
 testing_file = sys.argv[2]

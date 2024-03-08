@@ -42,8 +42,8 @@ import csv
 import matplotlib.pyplot as plt
 
 import time
+
 # SETTINGS.
-# TODO: consider moving them to sys.args and let user provide them from CLI.
 
 fn_in_train = sys.argv[1]
 fn_in = Path(fn_in_train).stem + '.csv'
