@@ -43,7 +43,6 @@ import time
 from multiprocessing import Pool
 
 # SETTINGS.
-# TODO: consider moving them to sys.args and let user provide them from CLI.
 
 MAX_WORKERS = 8
 
