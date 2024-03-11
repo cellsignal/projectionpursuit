@@ -11,6 +11,10 @@ right file. Bin the mix, then separate the mix into pairs
 "bin grid" for each of the pairs and calculate dissimilarities using quadratic
 form based comparison.
 Unmatched clusters are attempted to be merged to the originally matched ones.
+
+The script applies the algorithm on the UMAP coordinates, performs one-to-many matching
+from the left file to the right, visualizes the result and calculates the misclassification
+rate. The misclassified cells are painted black.
 """
 
 import os
