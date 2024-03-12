@@ -2024,7 +2024,7 @@ def main(unused_argv):
     sc = ax.scatter(*train_data.T, s=0.03, c=colors_train, cmap=newcmp, alpha=1.0)
     plt.setp(ax, xticks=[x_min, x_max, (x_max - x_min) / 4000], yticks=[y_min, y_max, (y_max - y_min) / 4000])
     cbar = plt.colorbar(sc, boundaries=np.arange(len(left_names) + 1) - 0.5)
-    cbar.set_ticks(np.arange(len(left_names) + 1))
+    cbar.set_ticks(np.arange(len(left_names)))
     # cbar.set_ticks(left)
     cbar.set_ticklabels(left_names)
 
@@ -2034,7 +2034,7 @@ def main(unused_argv):
     sc = ax.scatter(*test_data.T, s=0.03, c=colors_test, cmap=newcmp, alpha=1.0)
     plt.setp(ax, xticks=[x_min, x_max, (x_max - x_min) / 4000], yticks=[y_min, y_max, (y_max - y_min) / 4000])
     cbar = plt.colorbar(sc, boundaries=np.arange(len(right_names) + 1) - 0.5)
-    cbar.set_ticks(np.arange(len(right_names) + 1))
+    cbar.set_ticks(np.arange(len(right_names)))
     # cbar.set_ticks(right)
     cbar.set_ticklabels(right_names)
 
