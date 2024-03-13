@@ -1,3 +1,9 @@
+"""
+The script utilizes distance metric learning with UMAP to project
+the unlabeled data (test) into the embeddings space
+built using labeled data (training).
+"""
+
 import sys
 import os
 import time
