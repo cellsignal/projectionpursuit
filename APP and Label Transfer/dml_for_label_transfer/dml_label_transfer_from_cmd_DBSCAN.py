@@ -3,6 +3,8 @@ import sys
 import os
 
 import csv
+from pathlib import Path
+
 import numpy as np
 
 import umap
@@ -27,7 +29,7 @@ print('test list: ', fn_in_test_list)
 if not os.path.exists('dml'):
     os.makedirs('dml')
 
-fn_out_train = 'dml/' + fn_in_train + '_orig_with_umap.csv'
+fn_out_train = 'dml/' + Path(fn_in_train).stem + '.csv' + '_orig_with_umap.csv'
 
 with open(fn_in_train, 'r') as f:
     reader = csv.reader(f, delimiter=',')
@@ -52,8 +54,8 @@ np.savetxt(fn_out_train, result_train,
 for fn_in_test in fn_in_test_list:
     print('test: ', fn_in_test)
 
-    fn_out_test = 'dml/' + fn_in_train + '_' + fn_in_test + '_DBSCAN_with_umap.csv'
-    fn_out_test_orig = 'dml/' + fn_in_train + '_' + fn_in_test + '_orig_with_umap.csv'
+    fn_out_test = 'dml/' + Path(fn_in_train).stem + '.csv' + '_' + Path(fn_in_test).stem + '.csv' + '_DBSCAN_with_umap.csv'
+    fn_out_test_orig = 'dml/' + Path(fn_in_train).stem + '.csv' + '_' + Path(fn_in_test).stem + '.csv' + '_orig_with_umap.csv'
 
     with open(fn_in_test, 'r') as f:
         reader = csv.reader(f, delimiter=',')
