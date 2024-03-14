@@ -11,6 +11,11 @@ right file. Bin the mix, then separate the mix into pairs
 "bin grid" for each of the pairs and calculate dissimilarities using quadratic
 form based comparison.
 Unmatched clusters are attempted to be merged to the originally matched ones.
+
+The script executes many clusters-to-many cluster matching with QFMatch between
+the test set and training set results of the distance metric learning script.
+Further  visualizes the matching outcomes. Number of cells between the test set and
+the train set may differ for this version of script.
 """
 
 import os
