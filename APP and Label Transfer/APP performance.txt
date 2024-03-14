@@ -1,77 +1,45 @@
-parallel, 8 workers, 271 KB:
+Hardware used:
 
-cluster 0 size: 395
-cluster 1 size: 2728
-cluster 2 size: 550
-cluster 3 size: 2746
-total time elapsed:  44.45142936706543
+CPU: 11th Gen Intel(R) Core(TM) i7-1165G7 @ 2.80GHz, 4 core
+RAM: 32,0 GB
+
+Performance:
+
+parallel, 4 workers, 271 KB:
+
+input file: test_data/PHA0026.csv
+ndim: 10
+cell count: 6419
+min cluster size: 300
+number of clusters: 4
+workers count: 4
+total elapsed time: 23.886736631393433 s
 
 consistent, 271 KB:
 
-cluster 0 size: 395
-cluster 1 size: 2728
-cluster 2 size: 550
-cluster 3 size: 2746
-total time elapsed:  64.8825170993805
+input file: test_data/PHA0026.csv
+ndim: 10
+cell count: 6419
+min cluster size: 300
+number of clusters: 4
+total elapsed time: 42.00750136375427 s
 
-parallel, 8 workers, 1424 KB:
+parallel, 4 workers, 1424 KB:
 
-cluster 0 size: 324
-cluster 1 size: 529
-cluster 2 size: 431
-cluster 3 size: 498
-cluster 4 size: 550
-cluster 5 size: 609
-cluster 6 size: 522
-cluster 7 size: 305
-cluster 8 size: 2340
-cluster 9 size: 5864
-cluster 10 size: 746
-cluster 11 size: 1136
-cluster 12 size: 2260
-cluster 13 size: 609
-cluster 14 size: 1220
-cluster 15 size: 326
-cluster 16 size: 547
-cluster 17 size: 317
-cluster 18 size: 2475
-cluster 19 size: 1640
-cluster 20 size: 8567
-cluster 21 size: 532
-cluster 22 size: 776
-cluster 23 size: 335
-cluster 24 size: 478
-cluster 25 size: 655
-cluster 26 size: 483
-total time elapsed:  353.29193449020386
+input file: test_data/PHA1005.csv
+ndim: 10
+cell count: 35074
+min cluster size: 300
+number of clusters: 27
+workers count: 4
+total elapsed time: 312.427533864975 s
 
 consistent, 1424 KB:
 
-cluster 0 size: 324
-cluster 1 size: 529
-cluster 2 size: 431
-cluster 3 size: 2340
-cluster 4 size: 5864
-cluster 5 size: 317
-cluster 6 size: 2475
-cluster 7 size: 1640
-cluster 8 size: 8567
-cluster 9 size: 498
-cluster 10 size: 550
-cluster 11 size: 746
-cluster 12 size: 1136
-cluster 13 size: 2260
-cluster 14 size: 609
-cluster 15 size: 609
-cluster 16 size: 1220
-cluster 17 size: 326
-cluster 18 size: 547
-cluster 19 size: 532
-cluster 20 size: 776
-cluster 21 size: 335
-cluster 22 size: 478
-cluster 23 size: 655
-cluster 24 size: 483
-cluster 25 size: 522
-cluster 26 size: 305
-total time elapsed:  557.7369091510773
+input file: test_data/PHA1005.csv
+ndim: 10
+cell count: 35074
+min cluster size: 300
+number of clusters: 27
+total elapsed time: 374.85238695144653 s
+
