@@ -1,8 +1,8 @@
 There are few variants of the same script.
 
-If there is _custom modifier at the script name, it will be using the left file path and the right file path as input params, and it will be using the original file path and the comparison variant is there is no such modifier.
+If the script name contains the "_custom" modifier, it will utilize the left file path and the right file path as input parameters. On the other hand, if there is no such modifier, it will use the original file path, and the comparison variant will be determined accordingly.
 
-If there is no _no_black modifier at the script name, data points that are misclassified
+If the script name does not contains the "_no_black" modifier, data points that are misclassified
 will be visually highlighted by being painted black.
 
 Run examples:
