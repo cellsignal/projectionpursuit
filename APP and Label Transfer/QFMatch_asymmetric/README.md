@@ -7,6 +7,7 @@ will be visually highlighted by being painted black.
 
 Run examples:
 
+````
 fn_in='../test_data/PHA0026.csv'
 variant=0 # ground truth vs APP
 # variant=1 # ground truth vs Phenograph
@@ -22,5 +23,4 @@ left_file='../dml/ground_truth_PHA0026.csv.csv'
 right_file='../dml/projection_pursuit_PHA0026.csv.csv'
 
 python QFMatch_parallel_from_cmd_custom_asymmetric_no_black.py $left_file $right_file $bin_size $ndim $filter_size  $workers_count
-
-
+````
