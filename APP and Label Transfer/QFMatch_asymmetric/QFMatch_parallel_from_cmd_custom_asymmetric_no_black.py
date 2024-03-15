@@ -60,7 +60,7 @@ _RIGHT_FILENAME = testing_file
 _PNG_FILENAME = 'png/' + Path(training_file).stem + '_' + Path(testing_file).stem + '_asymmetric_no_black.png'
 _MATCH_RESULT_FILENAME = 'match_result/' + Path(training_file).stem + '_' + Path(testing_file).stem + '_match_result_asymmetric_no_black.csv'
 _MISCLASSIFICATION_FILENAME = 'misclassification/' + Path(training_file).stem + '_' + Path(testing_file).stem + '_misclassification_asymmetric_no_black.txt'
-_RUN_STATS_FILENAME = 'run_stats/'  + Path(training_file).stem + '_' + Path(testing_file).stem + '_run_stats_asymmetric_no_black.txt'
+_RUN_STATS_FILENAME = 'run_stats/' + Path(training_file).stem + '_' + Path(testing_file).stem + '_run_stats_asymmetric_no_black.txt'
 
 # Minimal bin size for binning the mix.
 _BIN_SIZE = int(sys.argv[3])
