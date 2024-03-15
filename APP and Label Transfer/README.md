@@ -14,7 +14,7 @@ For macOS - Python 3.8 via homebrew:
 
 ## The Folder Descriptions:
 
-**APP** - the group of script that applies APP itself on the unclustered data.
+**APP** - the group of scripts that applies APP itself on the unclustered data.
 
 **QFMatch_asymmetric** - the group of scripts that executes many clusters-to-one cluster (asymmetric) matching with QFMatch between the test set and training set results of the distance metric learning script, and further  visualizes the matching outcomes and computes the misclassification
 rate (if this task is required).
