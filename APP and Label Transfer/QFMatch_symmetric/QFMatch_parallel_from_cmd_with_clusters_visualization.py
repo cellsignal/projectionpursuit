@@ -2033,7 +2033,7 @@ def main(unused_argv):
     sc = ax.scatter(*train_data_2.T, s=0.3, c=colors_train_2, cmap='Spectral', alpha=1.0)
     plt.setp(ax, xticks=[x_min, x_max, (x_max - x_min) / 4000], yticks=[y_min, y_max, (y_max - y_min) / 4000])
     cbar = plt.colorbar(sc, boundaries=np.arange(len(train_labels_un) + 1) - 0.5)
-    cbar.set_ticks(np.arange(len(train_labels_un) + 1))
+    cbar.set_ticks(np.arange(len(train_labels_un)))
     # cbar.set_ticks(left)
     cbar.set_ticklabels(train_labels_un)
 
@@ -2050,7 +2050,7 @@ def main(unused_argv):
     sc = ax.scatter(*test_data_2.T, s=0.3, c=colors_test_2, cmap='Spectral', alpha=1.0)
     plt.setp(ax, xticks=[x_min, x_max, (x_max - x_min) / 4000], yticks=[y_min, y_max, (y_max - y_min) / 4000])
     cbar = plt.colorbar(sc, boundaries=np.arange(len(test_labels_un) + 1) - 0.5)
-    cbar.set_ticks(np.arange(len(test_labels_un) + 1))
+    cbar.set_ticks(np.arange(len(test_labels_un)))
     # cbar.set_ticks(right)
     cbar.set_ticklabels(test_labels_un)
 
