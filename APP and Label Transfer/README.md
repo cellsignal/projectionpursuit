@@ -56,6 +56,6 @@ built using labeled data (training) and assigns the labels to the test data with
 
 **match_result:** The CSV files containing the QFMatch match results are stored in this folder.
 
-**run_stats:** The run statistics TXT files from the APP are found in this folder.
+**run_stats:** The run statistics TXT files from the QFMatch are found in this folder.
 
 **QFMatch:** The QFMatch label transfer results with assigned labels are located in this folder.
