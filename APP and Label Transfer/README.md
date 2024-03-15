@@ -44,7 +44,7 @@ built using labeled data (training) and assigns the labels to the test data with
 
 **all_proj:** If the draw_all flag within the script is set to True, this folder will contain all the projections PNG files found by the APP. Otherwise, it will be empty.
 
-**all_split:** Similar to "all_proj," this folder holds all the split PNG files found by the APP if the draw_all flag is set to True; otherwise, it remains empty.
+**all_split:** Similar to **"all_proj"** this folder holds all the split PNG files found by the APP if the draw_all flag is set to True; otherwise, it remains empty.
 
 **split:** This folder contains the split images used by the APP to create the resulting clusters.
 
