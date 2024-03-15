@@ -48,4 +48,4 @@ rate (if this task is required).
 
 **run_stats:** The run statistics TXT files from the APP are found in this folder.
 
-**QFMatch:** The QFMatch_label_transfer results with assigned labels are located in this folder.
+**QFMatch:** The QFMatch label transfer results with assigned labels are located in this folder.
