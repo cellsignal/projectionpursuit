@@ -47,3 +47,5 @@ rate (if this task is required).
 **match_result:** The CSV files containing the QFMatch match results are stored in this folder.
 
 **run_stats:** The run statistics TXT files from the APP are found in this folder.
+
+**QFMatch:** The QFMatch_label_transfer results with assigned labels are located in this folder.
