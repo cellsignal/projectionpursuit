@@ -2,8 +2,15 @@ Please refer to the README_APP_and_QFMatch.py Python script or README_APP_and_QF
 
 Attempt to execute either of them to replicate the results.
 
-Before running scripts please make sure to install Python dependencies using the deps_python.sh shell script.
+Before running scripts please make sure to install Python dependencies using the deps_python.sh shell script for macOS or the deps_python.cmd script for Windows. You also may be need to install the Visual Studio Command Line Tools and the Windows SDK before installing dependencies for Windows.
 
+The scripts were tested with the following Python versions:
+
+For Windows - Python 3.7.9
+
+For macOS - Python 3.8 via homebrew:
+
+brew install python@3.8
 
 Output Folder Descriptions:
 
