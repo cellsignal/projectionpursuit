@@ -1,4 +1,4 @@
-Please refer to the **README_APP_and_QFMatch.py** Python script or **README_APP_and_QFMatch.sh** shell script.
+Please refer to the **RUN_ME_APP_and_QFMatch.py** Python script or **RUN_ME_APP_and_QFMatch.sh** shell script.
 
 Before running scripts please make sure to install Python dependencies using the **deps_python.sh** shell script for macOS or the **deps_python.cmd** script for Windows. You also may need to install the Visual Studio Command Line Tools and the Windows SDK before installing dependencies for Windows.
 
