@@ -21,12 +21,12 @@ macOS - Python 3.8 via homebrew:
 **QFMatch_custom** - the script that executes many clusters-to-many cluster matching with QFMatch between
 the test set and training set results (here test and training sets сould be two different data files) of the "dml_for_APP/dml_from_cmd.py" script.
 
-**QFMatch_label_transfer** - the script that assigns labels to unlabeled test data based on labeled training data, then it executes many clusters-to-one cluster (asymmetric) matching with QFMatch between the test set and training set results of the distance metric learning script, and further visualizes the matching outcomes and computes the misclassification
+**QFMatch_label_transfer** - the script that assigns labels to unlabeled test data based on labeled training data, then the consecutive script executes many clusters-to-one cluster (asymmetric) matching with QFMatch between the test set and training set results of the distance metric learning script, and further visualizes the matching outcomes and computes the misclassification
 rate.
 
 **dml_for_APP** - the script utilizes distance metric learning with UMAP to project the unlabeled data (test) into the embeddings space built using labeled data (training).
 
-**dml_for_label_transfer** - the group of scripts that utilizes distance metric learning with UMAP to project
+**dml_for_label_transfer** - the script that utilizes distance metric learning with UMAP to project
 the unlabeled data (test) into the embeddings space built using labeled data (training) and assigns the labels to the test data with SVC clustering.
 
 **test_data** - test data files.
