@@ -12,7 +12,7 @@ For macOS - Python 3.8 via homebrew:
 
 ## Folder Description:
 
-**APP** - the APP (Automated Projection Pursuit) Clustering script.
+**APP** - the APP (Automated Projection Pursuit) Clustering group of scripts.
 
 **QFMatch_asymmetric** - the group of scripts that executes many clusters-to-one cluster (asymmetric) matching with QFMatch between the test set and training set results of the distance metric learning script, and further  visualizes the matching outcomes and computes the misclassification
 rate (if this task is required).
