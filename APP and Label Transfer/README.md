@@ -14,14 +14,14 @@ For macOS - Python 3.8 via homebrew:
 
 **APP** - the APP (Automated Projection Pursuit) Clustering group of scripts.
 
-**QFMatch_asymmetric** - the group of scripts that executes many clusters-to-one cluster (asymmetric) matching with QFMatch between the test set and training set results of the distance metric learning script, and further  visualizes the matching outcomes and computes the misclassification
+**QFMatch_asymmetric** - the group of scripts that executes many clusters-to-one cluster (asymmetric) matching with QFMatch between the test set and training set results of the "dml_for_APP/dml_from_cmd.py" script, and further  visualizes the matching outcomes and computes the misclassification
 rate (if this task is required).
 
-**QFMatch_symmetric** - the group of scripts that executes many clusters-to-many cluster (symmetric) matching with QFMatch between the test set and training set results of the distance metric learning script, and further  visualizes the matching outcomes and computes the misclassification
+**QFMatch_symmetric** - the group of scripts that executes many clusters-to-many cluster (symmetric) matching with QFMatch between the test set and training set results of the "dml_for_APP/dml_from_cmd.py", and further  visualizes the matching outcomes and computes the misclassification
 rate (if this task is required).
 
 **QFMatch_custom** - the script that executes many clusters-to-many cluster matching with QFMatch between
-the test set and training set results of the distance metric learning script, and could be applied for the test set and the train set with different numbers of cells between them.
+the test set and training set results of the "dml_for_APP/dml_from_cmd.py", and could be applied for the test set and the train set with different numbers of cells between them.
 
 **QFMatch_label_transfer** - the script that assigns labels to the raw test data based on the clustered train data, and also the script that filters noise (if any), then executes many clusters-to-one cluster (asymmetric) matching with QFMatch between the test set and training set results of the distance metric learning script, and further  visualizes the matching outcomes and computes the misclassification
 rate (if this task is required).
