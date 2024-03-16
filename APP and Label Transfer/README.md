@@ -1,8 +1,6 @@
 Please refer to the **README_APP_and_QFMatch.py** Python script or **README_APP_and_QFMatch.sh** shell script.
 
-Attempt to execute either of them to replicate the results.
-
-Before running scripts please make sure to install Python dependencies using the **deps_python.sh** shell script for macOS or the **deps_python.cmd** script for Windows. You also may be need to install the Visual Studio Command Line Tools and the Windows SDK before installing dependencies for Windows.
+Before running scripts please make sure to install Python dependencies using the **deps_python.sh** shell script for macOS or the **deps_python.cmd** script for Windows. You also may need to install the Visual Studio Command Line Tools and the Windows SDK before installing dependencies for Windows.
 
 ### The scripts were tested with the following Python versions:
 
@@ -12,9 +10,9 @@ For macOS - Python 3.8 via homebrew:
 
 ````brew install python@3.8````
 
-## The Folder Descriptions:
+## Folder Description:
 
-**APP** - the group of scripts that applies APP itself on the unclustered data.
+**APP** - the APP (Automated Projection Pursuit) Clustering script.
 
 **QFMatch_asymmetric** - the group of scripts that executes many clusters-to-one cluster (asymmetric) matching with QFMatch between the test set and training set results of the distance metric learning script, and further  visualizes the matching outcomes and computes the misclassification
 rate (if this task is required).
