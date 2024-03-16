@@ -1,7 +1,7 @@
 There are few variants of the same script.
 
 The script utilizes distance metric learning with UMAP to project the unlabeled data (test) into the embeddings space
-built using labeled data (training) and assigns the labels to the test data with different clusterers: hdbscan, DBSCAN and SVC.
+built using labeled data (training) and assigns the labels to the test data with SVC clustering.
 
 Run example:
 
