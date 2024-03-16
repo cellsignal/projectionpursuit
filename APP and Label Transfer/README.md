@@ -32,7 +32,7 @@ built using labeled data (training). The version used for APP.
 
 **dml_for_label_transfer** - the group of scripts that utilizes distance metric learning with UMAP to project
 the unlabeled data (test) into the embeddings space
-built using labeled data (training) and assigns the labels to the test data with different clusterers. The version used for label transfer.
+built using labeled data (training) and assigns the labels to the test data with SVC clustering. The version used for label transfer.
 
 **test_data** - some data samples are stored it this folder.
 
