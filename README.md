@@ -1,5 +1,5 @@
 # projectionpursuit
-Automated projection pursuit clustering and applications to single cell RNA-seq and other test data sets
+Automated projection pursuit clustering and its applications to single cell RNA-seq and other test data sets
 
 ### project folders
 * pbmc_data - scRNA-seq data linked [here](https://satijalab.org/seurat/articles/pbmc3k_tutorial.html), principal component values, and a script to process the data and generate UMAPs
