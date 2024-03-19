@@ -1,7 +1,6 @@
 # projectionpursuit
-projection pursuit clustering and applications to single cell RNA-seq
+Automated projection pursuit clustering and applications to single cell RNA-seq and other test data sets
 
 ### project folders
-* EPP - scripts and readme to run projection pursuit (outdated)
 * pbmc_data - scRNA-seq data linked [here](https://satijalab.org/seurat/articles/pbmc3k_tutorial.html), principal component values, and a script to process the data and generate UMAPs
-* APP and Label Transfer - scripts and readme to run projection pursuit (up to date) along with a script and files to run the full projection pursuit process on an example dataset
+* APP and Label Transfer - scripts and readme to run the automated projection pursuit clustering along with the scripts and files to run the label transfer pipeline in application to the APP clustering
