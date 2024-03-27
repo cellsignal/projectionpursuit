@@ -1,22 +1,5 @@
 # encoding=utf-8
-"""Cluster matching.
 
-Algorightm:
-There are 2 data files with clustered 2d points: we call them "left" file
-and "right" file in the scope of this project.
-User can specify which cluster from the left file to find matches for.
-Algorithm will take this cluster, mix it with all the clusters from the
-right file. Bin the mix, then separate the mix into pairs
-(left cluster, one right cluster) for each right cluster. Then apply the same
-"bin grid" for each of the pairs and calculate dissimilarities using quadratic
-form based comparison.
-Unmatched clusters are attempted to be merged to the originally matched ones.
-
-The script executes many clusters-to-many cluster matching with QFMatch between
-the test set and training set results of the distance metric learning script.
-Further  visualizes the matching outcomes. Number of cells between the test set and
-the train set may differ for this version of script.
-"""
 
 import os
 from pathlib import Path
