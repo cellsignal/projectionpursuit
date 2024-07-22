@@ -10,7 +10,6 @@ import math
 import sys
 import itertools
 from matplotlib import pyplot
-from matplotlib import cm
 from matplotlib.colors import ListedColormap
 import matplotlib.patches as mpatches
 import numpy as np
@@ -1864,7 +1863,7 @@ def main(unused_argv):
                fmt='%.5f',
                delimiter=',', header=','.join(headers), comments='')
 
-    spectral = cm.get_cmap('Spectral', len(left_names))
+    spectral = plt.get_cmap('Spectral', len(left_names))
     newcolors = spectral(np.linspace(0, 1, len(left_names)))
     # black = np.array([0, 0, 0, 1])
     # newcolors[0, :] = black

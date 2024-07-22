@@ -5,7 +5,6 @@ from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import cm
 from skimage.filters import gaussian
 import csv
 from operator import attrgetter
@@ -41,7 +40,7 @@ iteration_paramList = []
 
 result_projections = []
 
-spectral = cm.get_cmap('Spectral', 2)
+spectral = plt.get_cmap('Spectral', 2)
 colors = spectral(np.linspace(0, 1, 2))
 red = colors[0, :]
 blue = colors[1, :]

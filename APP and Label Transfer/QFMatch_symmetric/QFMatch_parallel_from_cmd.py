@@ -12,7 +12,6 @@ import itertools
 from pathlib import Path
 
 from matplotlib import pyplot
-from matplotlib import cm
 from matplotlib.colors import ListedColormap
 import matplotlib.patches as mpatches
 import numpy as np
@@ -1966,7 +1965,7 @@ def main(unused_argv):
     print('final left names: ', left_names)
     print('final right names: ', right_names)
 
-    spectral = cm.get_cmap('Spectral', len(left_names))
+    spectral = plt.get_cmap('Spectral', len(left_names))
     newcolors = spectral(np.linspace(0, 1, len(left_names)))
     black = np.array([0, 0, 0, 1])
     newcolors[0, :] = black

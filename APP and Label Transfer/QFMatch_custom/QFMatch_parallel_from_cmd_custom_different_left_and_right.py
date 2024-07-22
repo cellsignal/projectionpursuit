@@ -11,7 +11,6 @@ import math
 import sys
 import itertools
 from matplotlib import pyplot
-from matplotlib import cm
 from matplotlib.colors import ListedColormap
 import matplotlib.patches as mpatches
 import numpy as np
@@ -1881,7 +1880,7 @@ def main(unused_argv):
     print("colors test: ", set(colors_test))
     print("colors test size", len(colors_test))
 
-    spectral = cm.get_cmap('Spectral', len(left_names))
+    spectral = plt.get_cmap('Spectral', len(left_names))
     newcolors = spectral(np.linspace(0, 1, len(left_names)))
     # red = np.array([1, 0, 0, 1])
     # newcolors[0, :] = red
