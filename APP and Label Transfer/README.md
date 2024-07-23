@@ -6,7 +6,10 @@ If running APP, dml_for_app, and QFMatch in sequence, note that QFMatch requires
 
 ### The scripts were tested with the following Python versions:
 
-Windows - Python 3.7.9
+Windows - Python 3.11.9
+* As of July 2024, Windows can run with the latest version of all packages, with two exceptions:
+  * ````phenograph```` must be set to version 1.5.3 due to an error caused by ````multiprocessing.pool````
+  * ````numpy```` must be set to version 1.23.5 due to ````phenograph```` referencing a removed data type
 
 macOS - Python 3.8 via homebrew:
 
