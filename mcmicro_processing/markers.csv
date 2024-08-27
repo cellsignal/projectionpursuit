@@ -1,0 +1,13 @@
+channel_number,cycle_number,marker_name,filter
+1,1,PK,Alexa488
+2,1,CD11c,Alexa594
+3,1,Sirpa,Alexa647
+4,1,CD163,Cy7
+5,1,DAPI_1,DAPI
+6,1,AF_1,AF
+7,2,CD206,Alexa488
+8,2,CD68,Alexa594
+9,2,CD45,Alexa647
+10,2,HLADRA,Cy7
+11,2,DAPI_2,DAPI
+12,2,AF_2,AF
