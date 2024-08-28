@@ -10,7 +10,7 @@ module load system/singularity/3.11.3
 
 project_dir=/gpfs/bwfor/work/ws/hd_hl269-signalstar/
 
-nextflow run schapirolabor/mcmicro -r 'staging' \
+nextflow run labsyspharm/mcmicro \
     --in $project_dir/data \
     --params $project_dir/params.yml \
     -profile singularity \
