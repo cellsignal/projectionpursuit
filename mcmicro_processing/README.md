@@ -1,8 +1,7 @@
-The script used to process the data on the bwForCluster Helix is provided in `run_mcmicro.sh` using an [MCMICRO pipeline](https://mcmicro.org) [branch](https://github.com/SchapiroLabor/mcmicro/tree/staging). The script refers to a config file provided in `run_mcmicro.config` and the parameter `yml` file provided in `params.yml`.
+The script used to process the data on the bwForCluster Helix is provided in `run_mcmicro.sh` using the [MCMICRO pipeline](https://mcmicro.org) (Schapiro et al. 2022). The script refers to a config file provided in `run_mcmicro.config` and the parameter `yml` file provided in `params.yml`.
 
 Nextflow version: 24.04.2.5914
 Singularity version: 3.11.3
-
 
 Input data was structured as follows:
 ```
