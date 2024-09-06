@@ -1,0 +1,14 @@
+workflow:
+  start-at: staging
+  stop-at: quantification
+  illumination: false
+  staging-method: phenoimager2mc
+  segmentation: mesmer
+  segmentation-recyze: true
+  segmentation-max-projection: true
+  segmentation-channel: 5 11
+  segmentation-nuclear-channel: 5 11
+options:
+  phenoimager2mc: -m 6 --normalization max
+  ashlar: --align-channel 4 --flip-y
+  mesmer: --image-mpp 0.49884663906387205 --nuclear-channel 0 --compartment "nuclear"
