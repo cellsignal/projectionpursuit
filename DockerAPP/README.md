@@ -10,11 +10,11 @@ Usage:
 
 3. Execute `app_install.sh`.
 
-4. execute `cd /app`.
+4. Execute `cd /app`.
 
-5a. execute `python RUN_ME_APP_and_QFMatch.py`.
+5a. Execute `python RUN_ME_APP_and_QFMatch.py`.
 
-5b. execute `python RUN_ME_label_transfer.py`.
+5b. Execute `python RUN_ME_label_transfer.py`.
 
 6. Find the results at the "app" folder.
 
